@@ -2,105 +2,437 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>Panel de Proyectos</title>
+<title>Inplantalariak - Panel de Aplicaciones Python</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" />
 <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #222;
-    color: #eee;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    color: #333;
+    min-height: 100vh;
   }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
   .header {
     text-align: center;
-    background: linear-gradient(to right, #4b1c1c 0%, #222 100%);
-    padding: 30px 10px 10px;
-    border-bottom: 3px solid #ff0000;
+    background: linear-gradient(to right, #ff0000 0%, #cc0000 100%);
+    padding: 40px 20px 30px;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(255,0,0,0.2);
   }
+  
   .logo {
     max-width: 180px;
     width: 30vw;
     border-radius: 20px;
-    margin-bottom: 10px;
-    box-shadow: 0 8px 24px rgba(100,0,0,0.8);
+    margin-bottom: 15px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    border: 3px solid white;
   }
+  
   h1 {
-    font-size: 2.1rem;
-    color: #ff0000;
-    margin: 0 0 5px 0;
+    font-size: 2.5rem;
+    color: white;
+    margin: 0 0 10px 0;
     font-weight: 700;
     letter-spacing: 0.01em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
   }
-  p {
+  
+  .subtitle {
+    font-size: 1.3rem;
+    color: white;
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+  
+  .description {
     text-align: center;
     font-size: 1.15rem;
     margin: 25px 0 40px 0;
-    color: #f4bbbb;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    max-width: 1100px;
-    margin: 0 auto 40px auto;
-    padding: 0 15px;
-  }
-  a {
-    display: block;
-    padding: 22px 12px;
-    background: linear-gradient(130deg, #1a1a1a 85%, #ff0000 100%);
+    color: #666;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+    padding: 20px;
+    background: white;
     border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .content-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
     border: 2px solid #ff0000;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.16rem;
-    color: #fff;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.12);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  
+  .section-title {
+    color: #ff0000;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #ff0000;
+  }
+  
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+  }
+  
+  .app-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  }
+  
+  .app-card:hover {
+    transform: translateY(-5px);
+    border-color: #ff0000;
+    box-shadow: 0 10px 25px rgba(255,0,0,0.15);
+  }
+  
+  .app-card h3 {
+    color: #ff0000;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+  }
+  
+  .app-card p {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  .btn-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .btn {
+    display: inline-block;
+    background: linear-gradient(to right, #ff0000, #cc0000);
+    color: white;
+    padding: 10px 20px;
     text-decoration: none;
-    letter-spacing: 0.02em;
-    transition: background 0.2s, transform 0.2s, border 0.2s;
-    box-shadow: 0 6px 20px rgba(60,0,0,0.25);
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(255,0,0,0.3);
   }
-  a:hover {
-    background: linear-gradient(130deg, #ff0000 80%, #1a1a1a 100%);
-    color: #fff;
-    transform: translateY(-3px) scale(1.03);
-    border-color: #ae1717;
+  
+  .btn:hover {
+    background: linear-gradient(to right, #cc0000, #aa0000);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(255,0,0,0.4);
   }
-  @media(max-width: 600px) {
-    .header { padding: 20px 5px 8px; }
-    h1 { font-size: 1.3rem; }
-    .logo { max-width: 100px; width: 55vw; }
-    .grid { grid-template-columns: 1fr; padding: 0 2vw; }
-    a { padding: 16px 8px; font-size: 1rem;}
+  
+  .emoji {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .app-card:hover .emoji {
+    transform: scale(1.2);
+  }
+  
+  .file-structure {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    margin: 15px 0;
+    border-left: 4px solid #ff0000;
+    color: #333;
+    border: 1px solid #e0e0e0;
+  }
+  
+  .feature-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .feature-list li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    color: #555;
+  }
+  
+  .feature-list li:before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    color: #ff0000;
+  }
+  
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    color: #666;
+    border-top: 2px solid #ff0000;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  
+  .footer a {
+    color: #ff0000;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .footer a:hover {
+    text-decoration: underline;
+  }
+  
+  @media(max-width: 768px) {
+    .header { 
+      padding: 30px 15px 20px; 
+    }
+    
+    h1 { 
+      font-size: 2rem; 
+    }
+    
+    .subtitle {
+      font-size: 1.1rem;
+    }
+    
+    .app-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .content-section {
+      padding: 20px 15px;
+    }
+  }
+  
+  @media(max-width: 480px) {
+    .header { 
+      padding: 20px 10px 15px; 
+    }
+    
+    h1 { 
+      font-size: 1.7rem; 
+    }
+    
+    .logo { 
+      max-width: 120px; 
+      width: 40vw; 
+    }
+    
+    .btn-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <img src="logo_influencer.webp" alt="Logo" class="logo">
-  <h1>Inplantalariak: Projets & Apps</h1>
-</div>
+<div class="container">
+  <div class="header">
+    <img src="logo_influencer.webp" alt="Logo Inplantalariak" class="logo">
+    <h1>Inplantalariak</h1>
+    <div class="subtitle">Aplicaciones Python y Herramientas Web</div>
+  </div>
 
-<p>Navega por las diferentes aplicaciones, documentos y plugins. ¡Haz clic en el nombre para abrir!</p>
+  <div class="description">
+    Bienvenido al repositorio de aplicaciones de Inplantalariak. Explora nuestras herramientas desarrolladas en Python y tecnologías web para diferentes necesidades empresariales.
+  </div>
 
-<div class="grid">
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Combinación_colores_moda/index.html">Combinación de Colores Moda</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Contador_tiempo/index.html">Contador de Tiempo</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Contrato_confidencialidad/index.html">Contrato de Confidencialidad</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Contrato_fotografa/index.html">Contrato Fotógrafa</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Crear_estructura_carpetas_Python/main.py">Crear Estructura (Python)</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Gestion_clases_danza/index.html">Clases de Danza</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Gestor_tareas/index.html">Gestor de Tareas</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Informes_tecnicos_construccion/index.html">Informes Técnicos</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Partes_trabajo_incidencias/index.html">Partes de Trabajo</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Presupuesto_gremios/index.html">Presupuesto Gremios</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Sistema_Fichajes/index.html">Sistema de Fichajes</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Chatbot_documental/index.html">Chatbot Documental</a>
-  <a href="https://sergioinplantalari.github.io/inplantalariak/Liga_futbol/index.html">⚽ Liga fútbol</a>
+  <div class="content-section">
+    <h2 class="section-title">🚀 Aplicaciones Disponibles</h2>
+    
+    <div class="app-grid">
+      <div class="app-card">
+        <h3>Combinación de Colores Moda</h3>
+        <p>Herramienta para crear paletas de colores armoniosas para proyectos de moda y diseño.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Combinación_colores_moda/index.html" class="btn">Abrir App</a>
+          <span class="emoji">🎨</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Contador de Tiempo</h3>
+        <p>Utilidad para medir y controlar tiempos de trabajo y proyectos.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Contador_tiempo/index.html" class="btn">Abrir App</a>
+          <span class="emoji">⏱️</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Contrato de Confidencialidad</h3>
+        <p>Plantilla de contrato de confidencialidad para acuerdos empresariales.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Contrato_confidencialidad/index.html" class="btn">Abrir App</a>
+          <span class="emoji">📄</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Contrato Fotógrafa</h3>
+        <p>Acuerdo contractual específico para servicios de fotografía profesional.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Contrato_fotografa/index.html" class="btn">Abrir App</a>
+          <span class="emoji">📷</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Crear Estructura Carpetas Python</h3>
+        <p>Script Python para generar estructuras de carpetas automáticamente.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Crear_estructura_carpetas_Python/main.py" class="btn">Ver Código</a>
+          <span class="emoji">🐍</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Gestión Clases de Danza</h3>
+        <p>Sistema para organizar y gestionar horarios de clases de baile.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Gestion_clases_danza/index.html" class="btn">Abrir App</a>
+          <span class="emoji">💃</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Gestor de Tareas</h3>
+        <p>Aplicación para organizar y seguir el progreso de tareas y proyectos.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Gestor_tareas/index.html" class="btn">Abrir App</a>
+          <span class="emoji">✅</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Informes Técnicos Construcción</h3>
+        <p>Generador de informes técnicos para proyectos de construcción.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Informes_tecnicos_construccion/index.html" class="btn">Abrir App</a>
+          <span class="emoji">🏗️</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Partes de Trabajo Incidencias</h3>
+        <p>Sistema para registrar y gestionar partes de trabajo e incidencias.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Partes_trabajo_incidencias/index.html" class="btn">Abrir App</a>
+          <span class="emoji">📋</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Presupuesto Gremios</h3>
+        <p>Herramienta para crear y gestionar presupuestos por gremios.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Presupuesto_gremios/index.html" class="btn">Abrir App</a>
+          <span class="emoji">💰</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Sistema de Fichajes</h3>
+        <p>Control de horarios y registros de entrada/salida del personal.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Sistema_Fichajes/index.html" class="btn">Abrir App</a>
+          <span class="emoji">⏰</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Chatbot Documental</h3>
+        <p>Asistente inteligente para búsqueda y gestión documental.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Chatbot_documental/index.html" class="btn">Abrir App</a>
+          <span class="emoji">🤖</span>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <h3>Liga de Fútbol</h3>
+        <p>Gestor de ligas y torneos de fútbol amateur.</p>
+        <div class="btn-container">
+          <a href="https://sergioinplantalari.github.io/inplantalariak/Liga_futbol/index.html" class="btn">Abrir App</a>
+          <span class="emoji">⚽</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <h2 class="section-title">💡 Características</h2>
+    <ul class="feature-list">
+      <li>Aplicaciones desarrolladas con Python y tecnologías web</li>
+      <li>Interfaces responsivas adaptadas a dispositivos móviles</li>
+      <li>Código abierto y disponible en GitHub</li>
+      <li>Fácil integración y personalización</li>
+      <li>Documentación clara para cada proyecto</li>
+    </ul>
+  </div>
+
+  <div class="content-section">
+    <h2 class="section-title">📁 Estructura del Repositorio</h2>
+    <div class="file-structure">
+      inplantalariak/<br>
+      ├── Combinación_colores_moda/<br>
+      ├── Contador_tiempo/<br>
+      ├── Contrato_confidencialidad/<br>
+      ├── Contrato_fotografa/<br>
+      ├── Crear_estructura_carpetas_Python/<br>
+      │   └── main.py<br>
+      ├── Gestion_clases_danza/<br>
+      ├── Gestor_tareas/<br>
+      ├── Informes_tecnicos_construccion/<br>
+      ├── Partes_trabajo_incidencias/<br>
+      ├── Presupuesto_gremios/<br>
+      ├── Sistema_Fichajes/<br>
+      ├── Chatbot_documental/<br>
+      └── Liga_futbol/
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>© 2030 Inplantalariak - Todos los derechos reservados</p>
+    <p>Visit us - <a href="https://github.com/sergioinplantalari/inplantalariak/tree/Apps-for-Inplantalariak">Visit our repository in GitHub</a></p>
+  </div>
 </div>
 
 </body>
