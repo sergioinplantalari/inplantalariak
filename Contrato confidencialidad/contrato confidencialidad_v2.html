@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato de Confidencialidad (NDA)</title>
+    <!-- Tailwind CSS CDN para modernizar la estructura y el diseño responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'legal-blue': '#3498db',
+                        'dark-bg': '#2c3e50',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos base manteniendo el look and feel legal */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            /* Degradado sobrio y legal */
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Estilos de navegación y pestañas */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nav-tab {
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 16px;
+            border-radius: 8px; /* Aplicar bordes redondeados */
+        }
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .nav-tab.active {
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            border-bottom: 3px solid #3498db;
+        }
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+            border-radius: 8px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Message Box (Reemplazo de alert) */
+        .custom-message-box {
+            position: fixed;
+            top: -60px; /* Inicia fuera de la vista */
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background-color: #3498db;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s ease;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        .custom-message-box.show {
+            top: 20px;
+            opacity: 1;
+        }
+
+        /* Estilos específicos de Contrato y Firma */
+        .contract-preview {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-top: 20px;
+            border-left: 5px solid #3498db;
+            border-radius: 8px;
+        }
+        .contract-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        .contract-header h2 {
+            color: #2c3e50;
+        }
+        .contract-section {
+            margin-bottom: 25px;
+            border-left: 2px solid #ddd;
+            padding-left: 15px;
+        }
+        .contract-section h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .contract-section p {
+            line-height: 1.6;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95em;
+        }
+        .contract-section strong {
+            color: #2c3e50;
+        }
+        
+        /* Media Queries para Responsividad mejorada */
+        @media (max-width: 768px) {
+            .tab-content {
+                padding: 20px 15px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .nav-tabs {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .nav-tab {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Custom Message Box -->
+    <div id="customMessage" class="custom-message-box"></div>
+
+    <div class="container mx-auto p-5 md:p-10 max-w-4xl">
+        <div class="header">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-3 text-white">🏛️ Acuerdo de Confidencialidad (NDA)</h1>
+            <p class="text-lg opacity-90 text-white">Generador de Contratos Legales para la Protección de Información</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab(event, 'info')">👤 Información de las Partes</button>
+            <button class="nav-tab" onclick="showTab(event, 'contract')">📄 Generar NDA</button>
+            <button class="nav-tab" onclick="showTab(event, 'info_adicional')">ℹ️ Cláusulas Detalladas</button>
+        </div>
+
+        <div id="info" class="tab-content active">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">👤 Información Esencial del Contrato</h2>
+            <p class="mb-6 text-gray-600">Completa los datos para identificar al Divulgador y al Receptor de la Información Confidencial.</p>
+
+            <form id="ndaForm">
+                <h3 class="text-xl font-semibold mb-3 mt-4 text-legal-blue">Parte 1: Divulgador (Quien Revela)</h3>
+                <div class="flex flex-col md:flex-row gap-5">
+                    <div class="flex-1">
+                        <label for="discloserName" class="block mb-2 font-semibold text-gray-700">Nombre/Razón Social:</label>
+                        <input type="text" id="discloserName" name="discloserName" value="Estudio Jurídico [Tu Nombre]" class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required>
+                    </div>
+                    <div class="flex-1">
+                        <label for="discloserAddress" class="block mb-2 font-semibold text-gray-700">Domicilio Legal:</label>
+                        <input type="text" id="discloserAddress" name="discloserAddress" value="Calle de la Ley, 123" class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-3 mt-8 text-legal-blue">Parte 2: Receptor (Quien Recibe y Secreta)</h3>
+                <div class="flex flex-col md:flex-row gap-5">
+                    <div class="flex-1">
+                        <label for="recipientName" class="block mb-2 font-semibold text-gray-700">Nombre/Razón Social:</label>
+                        <input type="text" id="recipientName" name="recipientName" placeholder="Ej: Tech Solutions S.A.S." class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required>
+                    </div>
+                    <div class="flex-1">
+                        <label for="recipientAddress" class="block mb-2 font-semibold text-gray-700">Domicilio Legal:</label>
+                        <input type="text" id="recipientAddress" name="recipientAddress" placeholder="Ej: Avenida Innovación, 456" class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-5 mt-5">
+                    <div class="flex-1">
+                        <label for="agreementDate" class="block mb-2 font-semibold text-gray-700">Fecha de Vigencia (Inicio):</label>
+                        <input type="date" id="agreementDate" name="agreementDate" class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required>
+                    </div>
+                    <div class="flex-1">
+                        <label for="duration" class="block mb-2 font-semibold text-gray-700">Duración de la Confidencialidad (Años):</label>
+                        <input type="number" id="duration" name="duration" min="1" max="100" value="5" class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <label for="purpose" class="block mb-2 font-semibold text-gray-700">Propósito de la Revelación (Justificación Legal):</label>
+                    <textarea id="purpose" name="purpose" placeholder="Ej: Evaluación de una posible fusión/adquisición, consulta de un caso sensible, desarrollo de software conjunto." class="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-legal-blue transition" required></textarea>
+                </div>
+
+                <button type="submit" class="btn mt-6 w-full md:w-auto p-3 text-white font-semibold rounded-lg shadow-lg bg-legal-blue hover:bg-blue-600 transition">💾 Guardar Datos y Generar NDA</button>
+            </form>
+
+            <div id="successMessage" class="p-4 mt-6 text-sm text-blue-800 rounded-lg bg-blue-50 border border-blue-200" style="display: none;">
+                ✅ Datos guardados correctamente. Ahora ve a la pestaña **"Generar NDA"** para ver el contrato.
+            </div>
+        </div>
+
+        <div id="contract" class="tab-content">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">📄 Contrato de Confidencialidad (NDA) Unilateral</h2>
+            <p class="mb-5 text-gray-600">Documento legal generado basado en la información de las partes. Debe ser firmado para su validez.</p>
+
+            <div class="p-4 bg-gray-100 rounded-lg shadow-inner mb-6 border-l-4 border-legal-blue">
+                <h3 class="text-lg font-bold text-dark-bg mb-2">📋 Resumen de Términos Clave</h3>
+                <div id="priceBreakdown" class="text-gray-600 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                    <div><span class="font-bold">Divulgador:</span> <span id="summaryDivulgador">---</span></div>
+                    <div><span class="font-bold">Receptor:</span> <span id="summaryReceptor">---</span></div>
+                    <div><span class="font-bold">Fecha de Inicio:</span> <span id="summaryDate">---</span></div>
+                    <div><span class="font-bold">Vigencia:</span> <span id="summaryDuration">---</span></div>
+                </div>
+            </div>
+
+            <div class="contract-preview" id="contractPreview">
+                <div class="contract-header">
+                    <h2>ACUERDO DE NO DIVULGACIÓN (NDA)</h2>
+                    <p>Entre **<span id="headerDiscloserName">EL DIVULGADOR</span>** y **<span id="headerRecipientName">EL RECEPTOR</span>**</p>
+                </div>
+
+                <div class="contract-section">
+                    <h3>CLÁUSULA 1. PARTES CONTRATANTES</h3>
+                    <p id="contractParties">Las partes son: **[Divulgador]** (en adelante, "Divulgador") con domicilio en [Domicilio Divulgador] y **[Receptor]** (en adelante, "Receptor") con domicilio en [Domicilio Receptor].</p>
+                </div>
+
+                <div class="contract-section">
+                    <h3>CLÁUSULA 2. OBJETO Y PROPÓSITO</h3>
+                    <p>El objeto del presente acuerdo es proteger la Información Confidencial que el Divulgador revele al Receptor. El propósito de dicha revelación es: <span id="contractPurpose"></span></p>
+                </div>
+
+                <div class="contract-section">
+                    <h3>CLÁUSULA 3. DEFINICIÓN DE INFORMACIÓN CONFIDENCIAL</h3>
+                    <p>Se entenderá por **"Información Confidencial"** cualquier dato, material, plan, secreto comercial, know-how o documento de naturaleza técnica, operativa, comercial o financiera, marcado o no como confidencial, revelado en relación con el **Propósito** antes mencionado. Se excluye información de dominio público, revelada por un tercero sin obligación de confidencialidad o conocida previamente por el Receptor.</p>
+                </div>
+
+                <div class="contract-section">
+                    <h3>CLÁUSULA 4. OBLIGACIÓN DE CONFIDENCIALIDAD Y USO</h3>
+                    <p>El Receptor se obliga a mantener la Información Confidencial en el más estricto secreto, utilizando el mismo grado de cuidado que utiliza para proteger su propia información sensible. El Receptor solo podrá utilizar la Información Confidencial para el **Propósito** acordado, quedando prohibida su reproducción o divulgación a terceros, salvo autorización expresa y por escrito del Divulgador o por requerimiento legal.</p>
+                </div>
+
+                <div class="contract-section">
+                    <h3>CLÁUSULA 5. VIGENCIA Y JURISDICCIÓN</h3>
+                    <p>La obligación de confidencialidad tendrá una vigencia de <span id="contractDuration"></span> años a partir de la fecha de inicio (<span id="contractDate"></span>). Para la resolución de cualquier controversia derivada del presente contrato, las partes se someten a la jurisdicción de los tribunales de **[Lugar de Firmas/Jurisdicción]**.</p>
+                </div>
+
+                <div class="contract-section">
+                    <h3 class="mt-8">FIRMAS</h3>
+                    <div class="signature-area flex flex-col md:flex-row gap-8 mt-5">
+                        <div class="signature-pad flex-1 min-w-[300px]">
+                            <h4 class="font-bold text-gray-700 mb-2">Firma del Divulgador:</h4>
+                            <div class="canvas-wrapper border border-gray-300 p-1 bg-white rounded-lg">
+                                <canvas id="discloserSignature" width="300" height="150" class="cursor-crosshair w-full block"></canvas>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button onclick="clearSignature('discloserSignature')" class="py-2 px-4 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition mr-2">🗑️ Limpiar</button>
+                                <button onclick="saveSignature('discloserSignature')" class="py-2 px-4 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition">💾 Guardar</button>
+                            </div>
+                            <p class="text-center mt-3 text-xs text-gray-500">
+                                Nombre: <span id="discloserNameSignature">_________________</span><br>
+                                Fecha: <span id="signatureDateDiscloser">_________________</span>
+                            </p>
+                        </div>
+
+                        <div class="signature-pad flex-1 min-w-[300px]">
+                            <h4 class="font-bold text-gray-700 mb-2">Firma del Receptor:</h4>
+                            <div class="canvas-wrapper border border-gray-300 p-1 bg-white rounded-lg">
+                                <canvas id="recipientSignature" width="300" height="150" class="cursor-crosshair w-full block"></canvas>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button onclick="clearSignature('recipientSignature')" class="py-2 px-4 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition mr-2">🗑️ Limpiar</button>
+                                <button onclick="saveSignature('recipientSignature')" class="py-2 px-4 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition">💾 Guardar</button>
+                            </div>
+                            <p class="text-center mt-3 text-xs text-gray-500">
+                                Nombre: <span id="recipientNameSignature">_________________</span><br>
+                                Fecha: <span id="signatureDateRecipient">_________________</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center flex flex-col sm:flex-row justify-center gap-4">
+                <button class="btn p-3 text-white font-semibold rounded-lg shadow-lg bg-legal-blue hover:bg-blue-600 transition" onclick="generateContract(true)">🔄 Actualizar Contrato</button>
+                <button class="btn p-3 text-white font-semibold rounded-lg shadow-lg bg-green-500 hover:bg-green-600 transition" onclick="generatePDF()">⬇️ Descargar NDA (PDF)</button>
+            </div>
+        </div>
+
+        <div id="info_adicional" class="tab-content">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">ℹ️ Cláusulas Adicionales Típicas del NDA</h2>
+            <p class="mb-6 text-gray-600">Esta sección proporciona detalles y aclaraciones legales para un entendimiento completo del acuerdo, y también se incluirán en el PDF.</p>
+
+            <div class="contract-section">
+                <h3>6. Excepciones a la Información Confidencial</h3>
+                <p>La obligación de confidencialidad no se aplicará a aquella información que el Receptor pueda demostrar: (a) que fue desarrollada independientemente sin utilizar la Información Confidencial; (b) que fue recibida de un tercero legalmente autorizado para revelarla; o (c) cuya divulgación sea requerida por ley o una orden judicial.</p>
+            </div>
+
+            <div class="contract-section">
+                <h3>7. Propiedad y Devolución</h3>
+                <p>Todo el material que contenga la Información Confidencial será propiedad exclusiva del Divulgador. El Receptor se compromete a devolver o destruir, a petición del Divulgador, todos los documentos o copias que contengan Información Confidencial al finalizar el Propósito o la vigencia de este Acuerdo.</p>
+            </div>
+
+            <div class="contract-section">
+                <h3>8. Incumplimiento</h3>
+                <p>El Receptor reconoce que la divulgación no autorizada de la Información Confidencial causará un daño irreparable al Divulgador. El Divulgador tendrá derecho a buscar medidas cautelares y a reclamar daños y perjuicios por el incumplimiento de este Acuerdo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Variables globales para datos del NDA y firmas
+        let ndaData = {};
+        let discloserSignatureData = null;
+        let recipientSignatureData = null;
+        
+        // --- Inicialización ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Asegurar que solo la primera pestaña esté activa al inicio
+            const firstTabButton = document.querySelector('.nav-tab');
+            const firstTabContent = document.querySelector('.tab-content');
+            
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            if (firstTabButton) {
+                firstTabButton.classList.add('active');
+            }
+            if (firstTabContent) {
+                firstTabContent.classList.add('active');
+            }
+
+            // Inicializar las áreas de firma
+            initializeSignaturePads();
+
+            // Establecer la fecha actual por defecto en el formulario
+            document.getElementById('agreementDate').valueAsDate = new Date();
+        });
+
+        // --- Sistema de Mensajes Personalizados (Reemplazo de alert()) ---
+        function showCustomMessage(message) {
+            const msgBox = document.getElementById('customMessage');
+            msgBox.textContent = message;
+            msgBox.classList.add('show');
+            
+            // Auto-ocultar después de 3 segundos
+            setTimeout(() => {
+                msgBox.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- Funciones de Firma (Mejora en manejo táctil y responsividad) ---
+
+        function initializeSignaturePads() {
+            const discloserCanvas = document.getElementById('discloserSignature');
+            const recipientCanvas = document.getElementById('recipientSignature');
+            setupSignatureCanvas(discloserCanvas);
+            setupSignatureCanvas(recipientCanvas);
+        }
+
+        function setupSignatureCanvas(canvas) {
+            let isDrawing = false;
+            const ctx = canvas.getContext('2d');
+
+            // Asegurar que el fondo del canvas sea blanco
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+
+            // Función para mapear coordenadas de la pantalla al canvas interno (resolución fija)
+            const getCoords = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                let clientX = e.clientX;
+                let clientY = e.clientY;
+
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            };
+
+            const startDrawing = (e) => {
+                isDrawing = true;
+                const { x, y } = getCoords(e);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                // Previene el desplazamiento en móviles
+                if (e.cancelable) e.preventDefault(); 
+            };
+
+            const draw = (e) => {
+                if (!isDrawing) return;
+                const { x, y } = getCoords(e);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                // Previene el desplazamiento en móviles
+                if (e.cancelable) e.preventDefault(); 
+            };
+
+            const stopDrawing = () => {
+                isDrawing = false;
+            };
+
+            // Eventos de ratón
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Eventos táctiles (usando passive: false para prevenir scroll)
+            canvas.addEventListener('touchstart', startDrawing, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing, { passive: false });
+        }
+
+        function clearSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Volver a dibujar el fondo blanco
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Limpiar datos de firma guardados
+            if (canvasId === 'discloserSignature') {
+                discloserSignatureData = null;
+                document.getElementById('signatureDateDiscloser').textContent = '_________________';
+            } else {
+                recipientSignatureData = null;
+                document.getElementById('signatureDateRecipient').textContent = '_________________';
+            }
+            showCustomMessage('🗑️ Firma borrada.');
+        }
+
+        function saveSignature(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+
+            // 1. Verificar si hay contenido (revisando si el canvas es completamente blanco)
+            try {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let hasContent = false;
+                // Buscamos cualquier píxel que no sea completamente blanco
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                    // Si el color no es 255, 255, 255 (blanco) O el alfa no es 0
+                    if (imageData.data[i] !== 255 || imageData.data[i+1] !== 255 || imageData.data[i+2] !== 255) {
+                        hasContent = true;
+                        break;
+                    }
+                }
+                
+                if (!hasContent) {
+                    showCustomMessage('⚠️ Por favor, dibuja la firma antes de guardar.');
+                    return;
+                }
+            } catch (e) {
+                console.error("Error al verificar la imagen del canvas: ", e);
+                showCustomMessage('⚠️ Error al verificar la firma. Inténtalo de nuevo.');
+                return;
+            }
+
+            const signatureData = canvas.toDataURL('image/png');
+            const currentDate = new Date().toLocaleDateString('es-ES');
+
+            if (canvasId === 'discloserSignature') {
+                discloserSignatureData = signatureData;
+                document.getElementById('signatureDateDiscloser').textContent = currentDate;
+                document.getElementById('discloserNameSignature').textContent = ndaData.discloserName || 'Divulgador';
+                showCustomMessage('✅ Firma del Divulgador guardada correctamente');
+            } else {
+                recipientSignatureData = signatureData;
+                document.getElementById('signatureDateRecipient').textContent = currentDate;
+                document.getElementById('recipientNameSignature').textContent = ndaData.recipientName || 'Receptor';
+                showCustomMessage('✅ Firma del Receptor guardada correctamente');
+            }
+        }
+
+        // --- Funciones de Navegación y Datos ---
+
+        function showTab(event, tabName) {
+            // Ocultar todas las pestañas
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Mostrar pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+
+            // Actualizar botones de navegación
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        document.getElementById('ndaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            ndaData = {};
+
+            // Obtener datos del formulario
+            for (let [key, value] of formData.entries()) {
+                ndaData[key] = value;
+            }
+
+            // Generar contenido del contrato
+            generateContract();
+            
+            // Mostrar mensaje de éxito
+            document.getElementById('successMessage').style.display = 'block';
+            showCustomMessage('✅ Datos guardados. Revisa la pestaña NDA.');
+        });
+
+        function generateContract(manualClick = false) {
+            if (!ndaData.discloserName || !ndaData.recipientName) {
+                if (manualClick) {
+                    showCustomMessage('⚠️ Por favor, completa primero la información de las partes.');
+                }
+                return;
+            }
+
+            const date = ndaData.agreementDate;
+            const duration = ndaData.duration;
+            const purpose = ndaData.purpose;
+            const discloser = ndaData.discloserName;
+            const recipient = ndaData.recipientName;
+            const discloserAddress = ndaData.discloserAddress;
+            const recipientAddress = ndaData.recipientAddress;
+
+            // 1. Actualizar Encabezado
+            document.getElementById('headerDiscloserName').textContent = discloser.toUpperCase();
+            document.getElementById('headerRecipientName').textContent = recipient.toUpperCase();
+
+            // 2. Actualizar Cláusulas del Contrato
+            document.getElementById('contractParties').innerHTML = `Las partes son: <strong>${discloser}</strong> (en adelante, "Divulgador") con domicilio en ${discloserAddress} y <strong>${recipient}</strong> (en adelante, "Receptor") con domicilio en ${recipientAddress}.`;
+            document.getElementById('contractPurpose').textContent = purpose;
+            document.getElementById('contractDuration').textContent = duration;
+            document.getElementById('contractDate').textContent = new Date(date).toLocaleDateString('es-ES');
+
+            // 3. Actualizar Nombres de Firmas (solo si no se han guardado las firmas)
+            if (!discloserSignatureData) {
+                document.getElementById('discloserNameSignature').textContent = discloser;
+            }
+            if (!recipientSignatureData) {
+                document.getElementById('recipientNameSignature').textContent = recipient;
+            }
+
+            // 4. Actualizar Resumen
+            document.getElementById('summaryDivulgador').textContent = discloser;
+            document.getElementById('summaryReceptor').textContent = recipient;
+            document.getElementById('summaryDate').textContent = new Date(date).toLocaleDateString('es-ES');
+            document.getElementById('summaryDuration').textContent = `${duration} años`;
+
+            if (manualClick) {
+                showCustomMessage('🔄 Contrato actualizado con los últimos datos.');
+            }
+        }
+
+        // --- Funciones de PDF (Lógica completada) ---
+
+        function generatePDF() {
+            if (!ndaData.discloserName || !ndaData.recipientName) {
+                showCustomMessage('⚠️ Primero debe guardar la información de las partes y generar el contrato.');
+                return;
+            }
+
+            // 1. Asegurarse de que el contrato esté generado
+            generateContract(false);
+            
+            // 2. Inicializar jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4'); // 'p'ortrait, 'mm', A4
+            
+            const contractElement = document.getElementById('contractPreview');
+            
+            const margin = 20;
+            let y = margin;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const textWidth = pageWidth - 2 * margin; // 170mm for A4 with 20mm margin
+
+            // --- Título Principal ---
+            doc.setFontSize(20);
+            doc.setFont("helvetica", "bold");
+            doc.text("ACUERDO DE CONFIDENCIALIDAD (NDA)", pageWidth / 2, y, { align: "center" });
+            y += 10;
+            doc.setFontSize(10);
+            doc.text(`Divulgador: ${ndaData.discloserName} | Receptor: ${ndaData.recipientName}`, pageWidth / 2, y, { align: "center" });
+            y += 15;
+
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+
+            // --- Contenido de Cláusulas (Cláusula 1 a 5) y Adicionales (6 a 8) ---
+            const mainContractSections = contractElement.querySelectorAll('.contract-section');
+            const additionalInfoElement = document.getElementById('info_adicional');
+            const additionalSections = additionalInfoElement.querySelectorAll('.contract-section');
+
+            const allSections = [...mainContractSections, ...additionalSections];
+
+            allSections.forEach(section => {
+                const title = section.querySelector('h3');
+                if (!title || title.textContent.includes('FIRMAS')) return; // Saltar sección de firmas aquí
+
+                // Título de la sección
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(52, 152, 219); // Azul legal
+                y += 7;
+
+                // Comprobar salto de página para el título
+                if (y + 10 > pageHeight - margin) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                const titleLines = doc.splitTextToSize(title.textContent.toUpperCase(), textWidth);
+                doc.text(titleLines, margin, y);
+                y += (titleLines.length * 5) + 3; // Mover hacia abajo
+                
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(0, 0, 0); // Volver a negro
+
+                // Párrafos
+                const paragraphs = section.querySelectorAll('p');
+                paragraphs.forEach(p => {
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = p.innerHTML.replace(/<strong>/g, '**').replace(/<\/strong>/g, '**'); // Convertir strong a Markdown simple para negritas
+
+                    let textContent = tempDiv.textContent || tempDiv.innerText;
+                    
+                    // Reemplazo manual de negritas (jsPDF tiene una limitación en estilos inline)
+                    // Para simplicidad, solo usamos el texto limpio.
+                    
+                    const lines = doc.splitTextToSize(textContent, textWidth);
+
+                    // Comprobar salto de página antes del párrafo
+                    if (y + (lines.length * 6) + 3 > pageHeight - margin) {
+                        doc.addPage();
+                        y = margin;
+                    }
+
+                    doc.text(lines, margin, y);
+                    y += (lines.length * 6) + 3; // 6 mm de alto de línea + 3 mm de espacio
+                });
+            });
+
+            // --- Sección de Firmas ---
+            y += 10;
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+
+            if (y + 10 > pageHeight - margin) {
+                doc.addPage();
+                y = margin;
+            }
+
+            doc.text("CLÁUSULA FINAL. FIRMAS", margin, y);
+            y += 10;
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text("Las partes firman digitalmente el presente Acuerdo de Confidencialidad en la fecha indicada a continuación, aceptando la totalidad de sus términos y condiciones.", margin, y);
+            y += 15;
+
+
+            // Configuración de layout de firmas en PDF
+            const sigY = y;
+            const sigWidth = 60; // Ancho de la imagen de firma en mm
+            const sigHeight = 30; // Alto de la imagen de firma en mm
+            const spaceBetween = 20; // Espacio entre las dos áreas de firma
+            const recipientX = margin + sigWidth + spaceBetween;
+
+            // Comprobar si hay espacio para ambas firmas
+            if (sigY + sigHeight + 20 > pageHeight - margin) {
+                doc.addPage();
+                y = margin;
+                sigY = y;
+            }
+            
+            // 1. Divulgador Signature
+            doc.setFont("helvetica", "bold");
+            doc.text("DIVULGADOR:", margin, sigY);
+            doc.setFont("helvetica", "normal");
+            
+            let currentSigY = sigY + 5;
+            if (discloserSignatureData) {
+                doc.addImage(discloserSignatureData, 'PNG', margin, currentSigY, sigWidth, sigHeight);
+                currentSigY += sigHeight + 5;
+                doc.text(`Nombre: ${ndaData.discloserName}`, margin, currentSigY);
+                doc.text(`Fecha: ${document.getElementById('signatureDateDiscloser').textContent}`, margin, currentSigY + 5);
+            } else {
+                doc.text("________________________________", margin, currentSigY + 15);
+                currentSigY += 25;
+                doc.text(`Nombre: ${ndaData.discloserName}`, margin, currentSigY + 5);
+                doc.text(`Fecha: No firmada`, margin, currentSigY + 10);
+            }
+            
+            // 2. Receptor Signature
+            doc.setFont("helvetica", "bold");
+            doc.text("RECEPTOR:", recipientX, sigY);
+            doc.setFont("helvetica", "normal");
+            
+            currentSigY = sigY + 5;
+            if (recipientSignatureData) {
+                doc.addImage(recipientSignatureData, 'PNG', recipientX, currentSigY, sigWidth, sigHeight);
+                currentSigY += sigHeight + 5;
+                doc.text(`Nombre: ${ndaData.recipientName}`, recipientX, currentSigY);
+                doc.text(`Fecha: ${document.getElementById('signatureDateRecipient').textContent}`, recipientX, currentSigY + 5);
+            } else {
+                doc.text("________________________________", recipientX, currentSigY + 15);
+                currentSigY += 25;
+                doc.text(`Nombre: ${ndaData.recipientName}`, recipientX, currentSigY + 5);
+                doc.text(`Fecha: No firmada`, recipientX, currentSigY + 10);
+            }
+
+
+            // 3. Final save/download
+            const discloserNameSafe = ndaData.discloserName.replace(/[^\w\s]/gi, '').trim().substring(0, 15);
+            const recipientNameSafe = ndaData.recipientName.replace(/[^\w\s]/gi, '').trim().substring(0, 15);
+            doc.save(`NDA_${discloserNameSafe}_vs_${recipientNameSafe}.pdf`);
+            showCustomMessage('📄 NDA descargado con éxito!');
+        }
+    </script>
+</body>
+</html>
