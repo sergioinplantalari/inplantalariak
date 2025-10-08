@@ -3,74 +3,104 @@
 <head>
 <meta charset="UTF-8" />
 <title>Panel de Proyectos y Documentos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" />
 <style>
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     margin: 0;
-    padding: 40px 20px;
+    padding: 0;
     background-color: #222;
     color: #eee;
   }
-  h1 {
+  .header {
     text-align: center;
-    font-size: 2.5rem;
-    color: #ff0000;
+    background: linear-gradient(to right, #4b1c1c 0%, #222 100%);
+    padding: 30px 10px 10px;
+    border-bottom: 3px solid #ff0000;
+  }
+  .logo {
+    max-width: 180px;
+    width: 30vw;
+    border-radius: 20px;
     margin-bottom: 10px;
+    box-shadow: 0 8px 24px rgba(100,0,0,0.8);
+  }
+  h1 {
+    font-size: 2.1rem;
+    color: #ff0000;
+    margin: 0 0 5px 0;
+    font-weight: 700;
+    letter-spacing: 0.01em;
   }
   p {
     text-align: center;
-    font-size: 1.2rem;
-    margin-bottom: 30px;
+    font-size: 1.15rem;
+    margin: 25px 0 40px 0;
+    color: #f4bbbb;
   }
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto 40px auto;
+    padding: 0 15px;
   }
   a {
     display: block;
-    padding: 20px;
-    background-color: #1a1a1a;
-    border: 2px solid #ff0000;
+    padding: 22px 12px;
+    background: linear-gradient(130deg, #1a1a1a 85%, #ff0000 100%);
     border-radius: 10px;
+    border: 2px solid #ff0000;
     text-align: center;
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.16rem;
     color: #fff;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.12);
     text-decoration: none;
-    transition: all 0.3s ease;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, transform 0.2s, border 0.2s;
+    box-shadow: 0 6px 20px rgba(60,0,0,0.25);
   }
   a:hover {
-    background-color: #ff0000;
+    background: linear-gradient(130deg, #ff0000 80%, #1a1a1a 100%);
     color: #fff;
-    border-color: #cc0000;
+    transform: translateY(-3px) scale(1.03);
+    border-color: #ae1717;
   }
   @media(max-width: 600px) {
-    body { padding: 20px; }
+    .header { padding: 20px 5px 8px; }
+    h1 { font-size: 1.3rem; }
+    .logo { max-width: 100px; width: 55vw; }
+    .grid { grid-template-columns: 1fr; padding: 0 2vw; }
+    a { padding: 16px 8px; font-size: 1rem;}
   }
 </style>
 </head>
 <body>
 
-<h1>Proyecto: Documentos y Apps</h1>
+<div class="header">
+  <img src="gurus%20e%20influencers.jpg" alt="Logo" class="logo">
+  <h1>Proyecto: Documentos y Apps</h1>
+</div>
+
 <p>Navega por las diferentes aplicaciones, documentos y plugins. ¡Haz clic en el nombre para abrir!</p>
 
 <div class="grid">
-  <a href="/Combinación_colores_moda/index.html">Combinación de Colores Moda</a>
-  <a href="/Contador_tiempo/index.html">Contador de Tiempo</a>
-  <a href="/Contrato_confidencialidad/index.html">Contrato de Confidencialidad</a>
-  <a href="/Contrato_fotografa/index.html">Contrato Fotógrafa</a>
-  <a href="/Crear_estructura_carpetas_Python/crear_estructura_carpetas.py">Crear Estructura (Python)</a>
-  <a href="/Crear_estructura_carpetas_Python/readme.md">Documentación (README)</a>
-  <a href="/Gestion_clases_danza/index.html">Clases de Danza</a>
-  <a href="/Gestor_tareas/index.html">Gestor de Tareas</a>
-  <a href="/Informes_tecnicos_construccion/index.html">Informes Técnicos</a>
-  <a href="/Partes_trabajo_incidencias/index.html">Partes de Trabajo</a>
-  <a href="/Presupuesto_gremios/index.html">Presupuesto Gremios</a>
-  <a href="/Sistema_Fichajes/index.html">Sistema de Fichajes</a>
-  <a href="/Chatbot_documental/index.html">Chatbot Documental</a>
-  <a href="/Liga_futbol/index.html">⚽ Liga fútbol</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Combinación_colores_moda/index.html">Combinación de Colores Moda</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Contador_tiempo/index.html">Contador de Tiempo</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Contrato_confidencialidad/index.html">Contrato de Confidencialidad</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Contrato_fotografa/index.html">Contrato Fotógrafa</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Crear_estructura_carpetas_Python/main.py">Crear Estructura (Python)</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Gestion_clases_danza/index.html">Clases de Danza</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Gestor_tareas/index.html">Gestor de Tareas</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Informes_tecnicos_construccion/index.html">Informes Técnicos</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Partes_trabajo_incidencias/index.html">Partes de Trabajo</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Presupuesto_gremios/index.html">Presupuesto Gremios</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Sistema_Fichajes/index.html">Sistema de Fichajes</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Chatbot_documental/index.html">Chatbot Documental</a>
+  <a href="https://sergioinplantalari.github.io/inplantalariak/Liga_futbol/index.html">⚽ Liga fútbol</a>
 </div>
 
 </body>
