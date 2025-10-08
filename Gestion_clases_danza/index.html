@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clases de Danza</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f0f0;
+    }
+
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+
+    .left, .right {
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .left {
+      flex: 1;
+      background: #ffffff;
+      border-right: 2px solid #ccc;
+    }
+
+    .right {
+      flex: 1;
+      background: #f7f7f7;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    select, input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      margin-right: 10px;
+      margin-top: 10px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #video, #photo {
+      margin-top: 10px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .entry {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Columna izquierda -->
+    <div class="left">
+      <h2>Registro de Clase</h2>
+      <form id="classForm">
+        <label for="profesora">Nombre de la profesora</label>
+        <select id="profesora" required>
+          <option value="Raúl">Raúl</option>
+          <option value="Marta">Marta</option>
+          <option value="Uxue">Uxue</option>
+        </select>
+
+        <label for="estilo">Estilo de danza</label>
+        <select id="estilo" required>
+          <option value="Baile clásico">Baile clásico</option>
+          <option value="Moderno">Moderno</option>
+        </select>
+
+        <label for="duracion">Duración (minutos)</label>
+        <input type="number" id="duracion" min="1" required />
+
+        <label for="notas">Notas de la clase</label>
+        <textarea id="notas" rows="4" required></textarea>
+
+        <button type="submit">Guardar clase</button>
+        <button type="button" onclick="takePhoto()">📸 Sacar foto</button>
+        <button type="button" onclick="generatePDF()">📄 Generar PDF</button>
+      </form>
+
+      <video id="video" autoplay></video>
+      <canvas id="canvas" style="display: none;"></canvas>
+      <img id="photo" src="" alt="Foto de clase"/>
+    </div>
+
+    <!-- Columna derecha -->
+    <div class="right">
+      <h2>Historial de Clases</h2>
+      <div id="history"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    const form = document.getElementById("classForm");
+    const history = document.getElementById("history");
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const photo = document.getElementById("photo");
+    let photoData = "";
+
+    // Activar cámara
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Error al acceder a la cámara:", err);
+      });
+
+    function takePhoto() {
+      const context = canvas.getContext("2d");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      photoData = canvas.toDataURL("image/png");
+      photo.src = photoData;
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const profesora = document.getElementById("profesora").value;
+      const estilo = document.getElementById("estilo").value;
+      const duracion = document.getElementById("duracion").value;
+      const notas = document.getElementById("notas").value;
+      const fecha = new Date().toLocaleString();
+
+      const entry = document.createElement("div");
+      entry.className = "entry";
+      entry.innerHTML = `
+        <p><strong>Fecha:</strong> ${fecha}</p>
+        <p><strong>Profesora:</strong> ${profesora}</p>
+        <p><strong>Estilo:</strong> ${estilo}</p>
+        <p><strong>Duración:</strong> ${duracion} minutos</p>
+        <p><strong>Notas:</strong><br/>${notas}</p>
+      `;
+      history.prepend(entry);
+
+      form.reset();
+    });
+
+    function generatePDF() {
+      const profesora = document.getElementById("profesora").value;
+      const estilo = document.getElementById("estilo").value;
+      const duracion = document.getElementById("duracion").value;
+      const notas = document.getElementById("notas").value;
+      const fecha = new Date().toLocaleString();
+
+      const content = document.createElement("div");
+      content.innerHTML = `
+        <h2>Clase de Danza</h2>
+        <p><strong>Fecha:</strong> ${fecha}</p>
+        <p><strong>Profesora:</strong> ${profesora}</p>
+        <p><strong>Estilo:</strong> ${estilo}</p>
+        <p><strong>Duración:</strong> ${duracion} minutos</p>
+        <p><strong>Notas:</strong> ${notas}</p>
+        ${photoData ? `<img src="${photoData}" style="width:100%;max-width:500px;"/>` : ""}
+      `;
+
+      html2pdf().set({
+        margin: 10,
+        filename: `Clase_Danza_${fecha.replace(/[/: ]/g, "_")}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { format: 'a4', orientation: 'portrait' }
+      }).from(content).save();
+    }
+  </script>
+</body>
+</html>

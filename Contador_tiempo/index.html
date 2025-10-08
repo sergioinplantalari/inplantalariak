@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Control de Tiempos de Tareas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      color: #333;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .cabecera {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .titulo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #b30000;
+    }
+
+    .reloj {
+      font-size: 16px;
+      color: #b30000;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, select {
+      padding: 12px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .botones {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-iniciar {
+      background-color: #b30000;
+      color: white;
+    }
+
+    .btn-iniciar:hover {
+      background-color: #cc0000;
+    }
+
+    .btn-fin {
+      background-color: #e65c5c;
+      color: white;
+    }
+
+    .btn-fin:hover {
+      background-color: #ff6666;
+    }
+
+    .btn-borrar {
+      background-color: #999;
+      color: white;
+    }
+
+    .btn-borrar:hover {
+      background-color: #777;
+    }
+
+    .btn-exportar {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .btn-exportar:hover {
+      background-color: #45a049;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #b30000;
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      background-color: #fff;
+    }
+
+    .acciones {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #mensajeEstado {
+      margin-top: 10px;
+      font-style: italic;
+      color: #b30000;
+    }
+
+    @media (min-width: 600px) {
+      .botones {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      .acciones {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+
+      button {
+        width: 48%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cabecera">
+    <div class="titulo">⏳ Control de Tiempos</div>
+    <div class="reloj" id="relojActual"></div>
+  </div>
+
+  <label>👤 Trabajador:</label>
+  <input type="text" id="trabajador" placeholder="Nombre del trabajador">
+
+  <label>🛠️ Tarea a realizar:</label>
+  <select id="tarea">
+    <option value="">-- Selecciona una tarea --</option>
+    <option value="CADENA 1">CADENA 1</option>
+    <option value="CADENA 2">CADENA 2</option>
+    <option value="OTROS">OTROS</option>
+  </select>
+
+  <div class="botones">
+    <button class="btn-iniciar" onclick="marcarInicio()">▶️ Iniciar tarea</button>
+    <button class="btn-fin" onclick="marcarFin()">⏹️ Finalizar tarea</button>
+  </div>
+
+  <div id="mensajeEstado"></div>
+
+  <table id="tablaTiempos">
+    <thead>
+      <tr>
+        <th>👤 Trabajador</th>
+        <th>🛠️ Tarea</th>
+        <th>🕒 Inicio</th>
+        <th>🕔 Fin</th>
+        <th>⏱️ Duración</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="acciones">
+    <button class="btn-borrar" onclick="borrarDatos()">🗑️ Borrar datos</button>
+    <button class="btn-exportar" onclick="exportarCSV()">📁 Exportar CSV</button>
+  </div>
+
+  <script>
+    let inicioActual = null;
+    let datos = [];
+
+    window.onload = function () {
+      const datosGuardados = localStorage.getItem("tareas");
+      if (datosGuardados) {
+        datos = JSON.parse(datosGuardados);
+        datos.forEach(dato => agregarFilaTabla(dato));
+      }
+      actualizarReloj();
+    };
+
+    function guardarEnLocalStorage() {
+      localStorage.setItem("tareas", JSON.stringify(datos));
+    }
+
+    function marcarInicio() {
+      const trabajador = document.getElementById('trabajador').value.trim();
+      const tarea = document.getElementById('tarea').value;
+      const mensaje = document.getElementById('mensajeEstado');
+
+      if (!trabajador || !tarea) {
+        mensaje.textContent = "⚠️ Por favor, completa todos los campos.";
+        return;
+      }
+
+      inicioActual = {
+        trabajador,
+        tarea,
+        inicio: new Date().toISOString(),
+        fin: null,
+        duracion: null
+      };
+
+      mensaje.textContent = `✅ Tarea iniciada por ${trabajador}.`;
+    }
+
+    function marcarFin() {
+      const mensaje = document.getElementById('mensajeEstado');
+
+      if (!inicioActual) {
+        mensaje.textContent = "⚠️ Primero pulsa 'Iniciar tarea'.";
+        return;
+      }
+
+      const fin = new Date();
+      const inicio = new Date(inicioActual.inicio);
+      const duracionMs = fin - inicio;
+      const duracionMin = Math.max(1, Math.round(duracionMs / 60000));
+
+      const registro = {
+        ...inicioActual,
+        fin: fin.toISOString(),
+        duracion: `${duracionMin} min`
+      };
+
+      datos.push(registro);
+      guardarEnLocalStorage();
+      agregarFilaTabla(registro);
+
+      inicioActual = null;
+      mensaje.textContent = "🟢 Tarea finalizada.";
+    }
+
+    function agregarFilaTabla(dato) {
+      const fila = document.createElement("tr");
+
+      fila.innerHTML = `
+        <td>${dato.trabajador}</td>
+        <td>${dato.tarea}</td>
+        <td>${new Date(dato.inicio).toLocaleString()}</td>
+        <td>${dato.fin ? new Date(dato.fin).toLocaleString() : ""}</td>
+        <td>${dato.duracion}</td>
+      `;
+
+      document.querySelector("#tablaTiempos tbody").appendChild(fila);
+    }
+
+    function borrarDatos() {
+      if (confirm("¿Seguro que quieres borrar todos los registros?")) {
+        datos = [];
+        localStorage.removeItem("tareas");
+        document.querySelector("#tablaTiempos tbody").innerHTML = "";
+        document.getElementById('mensajeEstado').textContent = "🗑️ Registros borrados.";
+      }
+    }
+
+    function exportarCSV() {
+      if (datos.length === 0) {
+        document.getElementById('mensajeEstado').textContent = "⚠️ No hay datos para exportar.";
+        return;
+      }
+
+      let csv = "Trabajador,Tarea,Inicio,Fin,Duración\n";
+      datos.forEach(d => {
+        csv += `"${d.trabajador}","${d.tarea}","${new Date(d.inicio).toLocaleString()}","${new Date(d.fin).toLocaleString()}","${d.duracion}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "tiempos_trabajo.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function actualizarReloj() {
+      const ahora = new Date();
+      const opciones = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      document.getElementById('relojActual').textContent = ahora.toLocaleString('es-ES', opciones);
+    }
+
+    setInterval(actualizarReloj, 1000);
+  </script>
+</body>
+</html>

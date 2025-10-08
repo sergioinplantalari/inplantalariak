@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Parte de Fichajes - Carpintería Portu</title>
+  <style>
+    :root { --bg:#faf7f2; --card:#ffffff; --ink:#222; --muted:#6b6b6b; --brand:#c8ba80; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:var(--bg); color:var(--ink); }
+    .wrap { max-width:880px; margin:0 auto; padding:20px; }
+    .card { background:var(--card); border-radius:20px; box-shadow:0 8px 24px rgba(0,0,0,.06); padding:18px; }
+    .header { display:flex; align-items:center; gap:12px; padding:6px 0 14px; }
+    .logo { width:64px; height:64px; object-fit:contain; border-radius:8px; }
+    h1 { font-size:clamp(20px,4.6vw,32px); margin:0; letter-spacing:.2px; }
+    p.sub { color:var(--muted); margin:6px 0 0; font-size:14px; }
+    form { display:grid; gap:14px; }
+    .row { display:grid; gap:10px; grid-template-columns:1fr; }
+    label { font-weight:600; font-size:14px; }
+    input, select, textarea { width:100%; padding:14px 12px; font-size:16px; border-radius:12px; border:1px solid #e5e1d8; background:#fff; }
+    .sig-wrap { background:#fff; border:1px dashed var(--brand); border-radius:14px; padding:10px; }
+    canvas { width:100%; height:180px; background:#fff; border-radius:10px; touch-action:none; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
+    button { border:0; border-radius:14px; padding:14px 16px; font-size:16px; font-weight:700; cursor:pointer; background:var(--brand); color:#111; }
+    button.secondary { background:#efefef; color:#333; }
+    .footer { text-align:center; color:var(--muted); font-size:12px; margin-top:18px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="header">
+        <!-- Asegúrate de guardar el HTML y este JPG en la misma carpeta -->
+        <img class="logo" id="logo" src="GREMIO LOGO-01 (1).jpg" alt="Nombre Empresa" />
+        <div>
+          <h1>Parte de fichajes</h1>
+          <p class="sub">Registra tu entrada y salida. El PDF se genera al completar la salida.</p>
+        </div>
+      </div>
+
+      <form id="fichajeForm" autocomplete="off">
+        <div class="row">
+          <label for="nombre">Nombre del trabajador</label>
+          <input id="nombre" name="nombre" type="text" placeholder="Nombre y apellidos" required />
+        </div>
+
+        <div class="row">
+          <label for="tipo">Tipo de fichaje</label>
+          <select id="tipo" name="tipo" required>
+            <option value="">Selecciona…</option>
+            <option value="entrada">Entrada</option>
+            <option value="salida">Salida</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label for="tarde">Motivo (si llega tarde)</label>
+          <input id="tarde" name="tarde" type="text" placeholder="Opcional" />
+        </div>
+
+        <div class="row">
+          <label>Firma del fichaje</label>
+          <div class="sig-wrap">
+            <canvas id="sig" width="1200" height="400"></canvas>
+            <div class="actions">
+              <button type="button" class="secondary" id="limpiarFirma">Borrar firma</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="guardarBtn" type="submit">Guardar fichaje</button>
+          <button id="pdfBtn" type="button" disabled>Descargar PDF</button>
+        </div>
+      </form>
+      <div class="footer" id="estado"></div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $ = (sel)=>document.querySelector(sel);
+  const nombreEl = $('#nombre');
+  const tipoEl = $('#tipo');
+  const tardeEl = $('#tarde');
+  const estadoEl = $('#estado');
+  const pdfBtn = $('#pdfBtn');
+  const form = $('#fichajeForm');
+
+  // ====== Firma en canvas ======
+  const canvas = document.getElementById('sig');
+  const ctx = canvas.getContext('2d');
+  let drawing = false, last = null, emptySinceClear = true;
+  function pos(e){
+    const r = canvas.getBoundingClientRect();
+    if(e.touches && e.touches[0]) { return { x: (e.touches[0].clientX - r.left) * (canvas.width/r.width), y: (e.touches[0].clientY - r.top) * (canvas.height/r.height) }; }
+    return { x: (e.clientX - r.left) * (canvas.width/r.width), y: (e.clientY - r.top) * (canvas.height/r.height) };
+  }
+  function start(e){ drawing = true; last = pos(e); e.preventDefault(); }
+  function move(e){ if(!drawing) return; const p = pos(e); ctx.lineCap='round'; ctx.lineJoin='round'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last = p; emptySinceClear = false; e.preventDefault(); }
+  function end(){ drawing = false; }
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false}); window.addEventListener('touchend', end);
+  $('#limpiarFirma').addEventListener('click', ()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); emptySinceClear = true; });
+
+  // ====== Utilidades ======
+  function hoyYMD(){ const d = new Date(); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0'); return `${d.getFullYear()}-${m}-${day}`; }
+  function horaHM(){ const d = new Date(); return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+  function key(nombre){ return `fichaje-${(nombre||'').trim().toLowerCase()}-${hoyYMD()}`; }
+  function get(nombre){ try { return JSON.parse(localStorage.getItem(key(nombre))) || null; } catch(e){ return null; } }
+  function set(nombre, data){ localStorage.setItem(key(nombre), JSON.stringify(data)); }
+  function sanitize(filename){ return filename.replace(/[^a-z0-9\-_. ]/gi,' ').replace(/\s+/g,'_'); }
+
+  function refreshEstado(){
+    const n = nombreEl.value.trim();
+    if(!n){ estadoEl.textContent = ''; pdfBtn.disabled = true; return; }
+    const data = get(n);
+    if(!data){ estadoEl.textContent = 'Sin registros para hoy.'; pdfBtn.disabled = true; return; }
+    let msg = `Entrada: ${data.entrada ? data.entrada.hora : '—'} | Salida: ${data.salida ? data.salida.hora : '—'}`;
+    estadoEl.textContent = msg;
+    pdfBtn.disabled = !(data && data.entrada && data.salida);
+  }
+  nombreEl.addEventListener('input', refreshEstado);
+  window.addEventListener('load', refreshEstado);
+
+  // ====== Guardar fichaje ======
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const nombre = nombreEl.value.trim();
+    const tipo = tipoEl.value;
+    const motivo = tardeEl.value.trim();
+
+    if(!nombre){ alert('Introduce el nombre del trabajador.'); return; }
+    if(!tipo){ alert('Selecciona el tipo de fichaje.'); return; }
+    if(emptySinceClear){ alert('La firma es obligatoria.'); return; }
+
+    const dataURL = canvas.toDataURL('image/png');
+    const ahoraH = horaHM();
+    const hoy = hoyYMD();
+    let data = get(nombre) || { nombre, fecha: hoy, entrada: null, salida: null };
+
+    if(tipo === 'entrada'){
+      if(data.entrada){ if(!confirm('Ya existe una ENTRADA registrada hoy. ¿Deseas sobrescribirla?')) return; }
+      data.entrada = { hora: ahoraH, motivo: motivo || '', firma: dataURL };
+      set(nombre, data);
+      alert('Entrada registrada.');
+      ctx.clearRect(0,0,canvas.width,canvas.height); emptySinceClear=true; tardeEl.value='';
+    } else {
+      if(!data.entrada){ alert('Primero debes registrar la ENTRADA.'); return; }
+      data.salida = { hora: ahoraH, motivo: motivo || '', firma: dataURL };
+      set(nombre, data);
+      alert('Salida registrada. Ahora puedes descargar el PDF.');
+    }
+    refreshEstado();
+  });
+
+  // ====== Utilidad: convertir IMG a dataURL segura ======
+  function imgToDataURL(imgEl){
+    try {
+      const c = document.createElement('canvas');
+      c.width = imgEl.naturalWidth; c.height = imgEl.naturalHeight;
+      const cctx = c.getContext('2d');
+      cctx.drawImage(imgEl, 0, 0);
+      return c.toDataURL('image/png'); // lo pasamos a PNG para jsPDF
+    } catch(e){ return null; }
+  }
+
+  // ====== Generar PDF ======
+  pdfBtn.addEventListener('click', function(){
+    const nombre = nombreEl.value.trim();
+    const data = get(nombre);
+    if(!(data && data.entrada && data.salida)){ alert('Necesitas ENTRADA y SALIDA registradas.'); return; }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit:'pt', format:'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const margin = 48;
+
+    // Cabecera
+    pdf.setFillColor(248,245,235);
+    pdf.rect(0,0,pageW,90,'F');
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(18);
+    pdf.text('Parte de fichaje', margin, 48);
+    pdf.setFont('helvetica','normal'); pdf.setFontSize(11);
+    pdf.text(`Fecha: ${data.fecha}`, margin, 68);
+
+    // Logo desde <img id="logo">
+    try {
+      const logoEl = document.getElementById('logo');
+      if(logoEl && logoEl.complete && logoEl.naturalWidth){
+        const dataUrl = imgToDataURL(logoEl);
+        if(dataUrl) pdf.addImage(dataUrl, 'PNG', pageW-140, 20, 100, 50);
+      }
+    } catch(_){}
+
+    // Datos
+    const y0 = 130;
+    pdf.setFont('helvetica','bold'); pdf.setFontSize(12);
+    pdf.text('Trabajador/a:', margin, y0);
+    pdf.setFont('helvetica','normal'); pdf.text(data.nombre || nombre, margin+110, y0);
+
+    let y = y0 + 30;
+    pdf.setFont('helvetica','bold'); pdf.text('Entrada', margin, y);
+    pdf.setFont('helvetica','normal'); pdf.text(`Hora: ${data.entrada.hora}`, margin+100, y);
+    y += 18; pdf.text(`Motivo tardanza: ${data.entrada.motivo || '—'}`, margin+100, y);
+
+    y += 36;
+    pdf.setFont('helvetica','bold'); pdf.text('Salida', margin, y);
+    pdf.setFont('helvetica','normal'); pdf.text(`Hora: ${data.salida.hora}`, margin+100, y);
+    y += 18; pdf.text(`Motivo tardanza: ${data.salida.motivo || '—'}`, margin+100, y);
+
+    // Firmas
+    y += 36; pdf.setFont('helvetica','bold'); pdf.text('Firma ENTRADA', margin, y); pdf.text('Firma SALIDA', pageW/2 + 20, y);
+    y += 8; pdf.setDrawColor(200,186,128); pdf.setLineWidth(1);
+    pdf.roundedRect(margin, y, pageW/2 - margin*1.5, 120, 6, 6);
+    pdf.roundedRect(pageW/2 + 20, y, pageW/2 - margin*1.5, 120, 6, 6);
+
+    try { if(data.entrada.firma) pdf.addImage(data.entrada.firma,'PNG', margin+6, y+6, pageW/2 - margin*1.5 - 12, 108); } catch(_){}
+    try { if(data.salida.firma) pdf.addImage(data.salida.firma,'PNG', pageW/2 + 26, y+6, pageW/2 - margin*1.5 - 12, 108); } catch(_){}
+
+    // Pie
+    const footerY = 780; pdf.setFont('helvetica','italic'); pdf.setFontSize(9);
+    pdf.text('Declaración: la información consignada es cierta y corresponde a la jornada real. La falsedad puede conllevar responsabilidades disciplinarias o legales.', margin, footerY, { maxWidth: pageW - margin*2 });
+
+    const filename = `${sanitize(data.nombre || nombre)}_${data.fecha}.pdf`;
+    pdf.save(filename);
+  });
+
+  // Guardar último nombre usado
+  const lastName = localStorage.getItem('ultimo-nombre');
+  if(lastName){ nombreEl.value = lastName; }
+  nombreEl.addEventListener('change', ()=>{ localStorage.setItem('ultimo-nombre', nombreEl.value.trim()); refreshEstado(); });
+})();
+</script>
+</body>
+</html>

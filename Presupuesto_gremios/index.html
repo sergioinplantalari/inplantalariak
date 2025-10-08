@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Presupuesto para Pintores</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body class="bg-light p-4">
+
+    <div class="container bg-white p-4 rounded shadow">
+        <h2 class="mb-4">Presupuesto de materiales para pintores</h2>
+        <table id="materiales" class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Categoría</th>
+                    <th>Subcategoría</th>
+                    <th>€/m²</th>
+                    <th>m²</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <select class="form-select categoria" onchange="actualizarSubcategorias(this)">
+                            <option>Pinturas</option>
+                            <option>Soportes</option>
+                            <option>Pinceles y herramientas de aplicación</option>
+                            <option>Medios y aditivos</option>
+                            <option>Herramientas auxiliares</option>
+                            <option>Acabados y protección</option>
+                            <option>Accesorios de limpieza</option>
+                            <option>Materiales de dibujo previo</option>
+                        </select>
+                    </td>
+                    <td><select class="form-select subcategoria"></select></td>
+                    <td><input type="number" class="form-control precio" placeholder="€/m²" step="0.01"></td>
+                    <td><input type="number" class="form-control metros" placeholder="m²" step="0.01"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-secondary" onclick="agregarFila()">+ Añadir línea</button>
+        <button class="btn btn-warning" onclick="previsualizarPresupuesto()">Previsualizar presupuesto</button>
+        <button class="btn btn-primary" onclick="generarPdf()">Exportar a PDF</button>
+
+        <div id="preview-content" class="mt-4 p-3 bg-white border rounded shadow-sm"></div>
+    </div>
+
+    <script>
+        const subcategorias = {
+            "Pinturas": ["Acrílicas", "Óleos", "Acuarelas", "Gouache", "Témperas", "Pinturas en aerosol"],
+            "Soportes": ["Lienzos", "Papel", "Tablas de madera o MDF", "Cartón o cartulina", "Paredes o murales"],
+            "Pinceles y herramientas de aplicación": ["Pinceles", "Espátulas", "Rodillos", "Aerógrafos", "Esponjas"],
+            "Medios y aditivos": ["Diluyentes", "Medios para acrílico u óleo", "Gesso"],
+            "Herramientas auxiliares": ["Caballetes", "Paletas", "Cuchillas o cutters", "Lápices, carboncillos o marcadores"],
+            "Acabados y protección": ["Barnices", "Fijadores", "Selladores"],
+            "Accesorios de limpieza": ["Trapos o toallas", "Disolventes", "Jabones especializados"],
+            "Materiales de dibujo previo": ["Lápices de grafito", "Gomas de borrar", "Plantillas o reglas"]
+        };
+
+        function actualizarSubcategorias(select) {
+            const categoria = select.value;
+            const fila = select.closest("tr");
+            const subSelect = fila.querySelector(".subcategoria");
+            subSelect.innerHTML = "";
+            const opciones = subcategorias[categoria] || []; // Asegurarse de que sea un array
+            opciones.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = opt.textContent = s;
+                subSelect.appendChild(opt);
+            });
+            if (opciones.length > 0) {
+                subSelect.value = opciones[0];
+            }
+        }
+
+        function agregarFila() {
+            const tbody = document.querySelector("#materiales tbody");
+            const fila = tbody.rows[0].cloneNode(true);
+            fila.querySelectorAll("input").forEach(input => input.value = "");
+            const categoriaSelect = fila.querySelector(".categoria");
+            categoriaSelect.selectedIndex = 0; // Selecciona la primera opción de categoría
+            tbody.appendChild(fila);
+            actualizarSubcategorias(categoriaSelect); // Carga las subcategorías para la nueva fila
+        }
+
+        function previsualizarPresupuesto() {
+            const filas = document.querySelectorAll("#materiales tbody tr");
+            let total = 0;
+            let html = `
+                <h3 class="mb-3">Vista previa del presupuesto</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr class="table-light">
+                            <th>Categoría</th>
+                            <th>Subcategoría</th>
+                            <th>€/m²</th>
+                            <th>m²</th>
+                            <th>Total (€)</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            for (const fila of filas) {
+                const [cat, sub, precio, metros] = fila.querySelectorAll("select, input");
+                const p = parseFloat(precio.value) || 0;
+                const m = parseFloat(metros.value) || 0;
+                const subtotal = p * m;
+                total += subtotal;
+                html += `<tr>
+                    <td>${cat.value}</td>
+                    <td>${sub.value}</td>
+                    <td>${p.toFixed(2)}</td>
+                    <td>${m.toFixed(2)}</td>
+                    <td>${subtotal.toFixed(2)}</td>
+                </tr>`;
+            }
+            html += `<tr>
+                <td colspan="4"><strong>Total</strong></td>
+                <td><strong>${total.toFixed(2)} €</strong></td>
+            </tr></tbody></table>`;
+            document.getElementById("preview-content").innerHTML = html;
+        }
+
+        // Función para generar el PDF
+        async function generarPdf() {
+            // Asegurarse de que jspdf esté disponible globalmente (window.jspdf)
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                console.error("jsPDF no está cargado correctamente.");
+                alert("Error: Las librerías de PDF no se cargaron. Asegúrate de estar ejecutando en un servidor local.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF(); // Por defecto, A4, retrato
+
+            // Margenes y posicionamiento inicial
+            const margin = 20;
+            let yPos = margin; // Posición Y actual en el documento
+
+            // Título
+            doc.setFontSize(24);
+            doc.text("Presupuesto de Materiales para Pintores", margin, yPos);
+            yPos += 15; // Espacio después del título
+
+            // Fecha
+            doc.setFontSize(12);
+            const fecha = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+            doc.text(`Fecha: ${fecha}`, margin, yPos);
+            yPos += 20; // Espacio después de la fecha y antes de la tabla
+
+            // Preparar datos para la tabla
+            const head = [['Categoría', 'Subcategoría', '€/m²', 'm²', 'Total (€)']];
+            const body = [];
+            let totalGeneral = 0;
+
+            const filas = document.querySelectorAll("#materiales tbody tr");
+            for (const fila of filas) {
+                const cat = fila.querySelector(".categoria");
+                const sub = fila.querySelector(".subcategoria");
+                const precio = fila.querySelector(".precio");
+                const metros = fila.querySelector(".metros");
+
+                const p = parseFloat(precio.value) || 0;
+                const m = parseFloat(metros.value) || 0;
+                const subtotal = p * m;
+                totalGeneral += subtotal;
+
+                body.push([
+                    cat.value,
+                    sub.value,
+                    p.toFixed(2),
+                    m.toFixed(2),
+                    subtotal.toFixed(2)
+                ]);
+            }
+
+            // Añadir la tabla al PDF
+            doc.autoTable({
+                head: head,
+                body: body,
+                startY: yPos,
+                theme: 'striped', // 'striped', 'grid', 'plain'
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 3,
+                    halign: 'left', // Alineación horizontal de las celdas
+                    valign: 'middle' // Alineación vertical
+                },
+                headStyles: {
+                    fillColor: [52, 73, 94], // Color de fondo del encabezado (azul oscuro)
+                    textColor: 255, // Texto blanco
+                    fontStyle: 'bold',
+                    halign: 'center' // Centrar el texto del encabezado
+                },
+                columnStyles: {
+                    // Ajustes específicos para columnas (índice 0, 1, 2...)
+                    2: { halign: 'right' }, // €/m² a la derecha
+                    3: { halign: 'right' }, // m² a la derecha
+                    4: { halign: 'right' }  // Total (€) a la derecha
+                },
+                margin: { top: margin, right: margin, bottom: margin, left: margin }, // Márgenes
+                didDrawPage: function (data) {
+                    // Esto se ejecuta en cada página dibujada
+                    // Puedes añadir un pie de página o encabezado aquí
+                    let pageCount = doc.internal.getNumberOfPages();
+                    doc.setFontSize(10);
+                    doc.text(`Página ${pageCount}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
+                }
+            });
+
+            // Actualizar la posición Y después de la tabla
+            yPos = doc.autoTable.previous.finalY + 10;
+
+            // Añadir el total final
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold'); // Negrita para el total
+            doc.text(`Total Presupuesto: ${totalGeneral.toFixed(2)} €`, doc.internal.pageSize.width - margin, yPos, { align: 'right' });
+
+
+            // Guardar el PDF
+            doc.save("Presupuesto_Pintores.pdf");
+        }
+
+        // Inicializar las subcategorías cuando la página se carga por primera vez
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const firstCategorySelect = document.querySelector(".categoria");
+            if (firstCategorySelect) {
+                actualizarSubcategorias(firstCategorySelect);
+            }
+        });
+    </script>
+</body>
+</html>

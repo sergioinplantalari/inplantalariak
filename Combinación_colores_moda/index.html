@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combinaciones de Colores - Moda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        .color-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .color-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .color-card.selected {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 3px solid #3B82F6;
+        }
+        
+        .combination-item {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .outfit-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">🎨 Combinaciones de Colores</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Descubre las mejores combinaciones de colores para tu ropa y crea outfits perfectos</p>
+        </div>
+
+        <!-- Color Selector -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Selecciona un Color Base</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4" id="colorGrid">
+                <!-- Colors will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Combinations Display -->
+        <div id="combinationsSection" class="hidden">
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Mejores Combinaciones para <span id="selectedColorName" class="text-blue-600"></span></h2>
+                <div id="combinationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Combinations will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Outfit Preview -->
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Vista Previa del Outfit</h2>
+                <div class="outfit-preview rounded-xl p-8 text-center">
+                    <div id="outfitDisplay" class="space-y-4">
+                        <!-- Outfit preview will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const colors = {
+            'Negro': {
+                hex: '#000000',
+                combinations: [
+                    { name: 'Blanco', hex: '#FFFFFF', style: 'Clásico y elegante' },
+                    { name: 'Gris', hex: '#808080', style: 'Sofisticado y moderno' },
+                    { name: 'Rojo', hex: '#DC2626', style: 'Dramático y llamativo' },
+                    { name: 'Dorado', hex: '#F59E0B', style: 'Lujoso y festivo' }
+                ]
+            },
+            'Blanco': {
+                hex: '#FFFFFF',
+                combinations: [
+                    { name: 'Negro', hex: '#000000', style: 'Contraste perfecto' },
+                    { name: 'Azul Marino', hex: '#1E3A8A', style: 'Fresco y profesional' },
+                    { name: 'Beige', hex: '#D2B48C', style: 'Suave y natural' },
+                    { name: 'Rosa Pastel', hex: '#F8BBD9', style: 'Romántico y delicado' }
+                ]
+            },
+            'Azul Marino': {
+                hex: '#1E3A8A',
+                combinations: [
+                    { name: 'Blanco', hex: '#FFFFFF', style: 'Náutico y clásico' },
+                    { name: 'Beige', hex: '#D2B48C', style: 'Elegante y relajado' },
+                    { name: 'Gris Claro', hex: '#D1D5DB', style: 'Profesional y limpio' },
+                    { name: 'Coral', hex: '#FF7F7F', style: 'Vibrante y moderno' }
+                ]
+            },
+            'Gris': {
+                hex: '#6B7280',
+                combinations: [
+                    { name: 'Amarillo', hex: '#FDE047', style: 'Energético y alegre' },
+                    { name: 'Rosa', hex: '#EC4899', style: 'Femenino y chic' },
+                    { name: 'Verde Menta', hex: '#6EE7B7', style: 'Fresco y juvenil' },
+                    { name: 'Blanco', hex: '#FFFFFF', style: 'Minimalista y clean' }
+                ]
+            },
+            'Beige': {
+                hex: '#D2B48C',
+                combinations: [
+                    { name: 'Marrón', hex: '#92400E', style: 'Terroso y cálido' },
+                    { name: 'Verde Oliva', hex: '#65A30D', style: 'Natural y orgánico' },
+                    { name: 'Azul Claro', hex: '#7DD3FC', style: 'Sereno y relajante' },
+                    { name: 'Crema', hex: '#FEF3C7', style: 'Suave y acogedor' }
+                ]
+            },
+            'Rojo': {
+                hex: '#DC2626',
+                combinations: [
+                    { name: 'Negro', hex: '#000000', style: 'Poderoso y elegante' },
+                    { name: 'Blanco', hex: '#FFFFFF', style: 'Clásico y limpio' },
+                    { name: 'Gris', hex: '#6B7280', style: 'Equilibrado y moderno' },
+                    { name: 'Azul Marino', hex: '#1E3A8A', style: 'Patriótico y fuerte' }
+                ]
+            },
+            'Verde': {
+                hex: '#16A34A',
+                combinations: [
+                    { name: 'Beige', hex: '#D2B48C', style: 'Natural y orgánico' },
+                    { name: 'Marrón', hex: '#92400E', style: 'Terroso y estable' },
+                    { name: 'Crema', hex: '#FEF3C7', style: 'Fresco y natural' },
+                    { name: 'Dorado', hex: '#F59E0B', style: 'Rico y lujoso' }
+                ]
+            },
+            'Rosa': {
+                hex: '#EC4899',
+                combinations: [
+                    { name: 'Gris', hex: '#6B7280', style: 'Sofisticado y chic' },
+                    { name: 'Blanco', hex: '#FFFFFF', style: 'Dulce y romántico' },
+                    { name: 'Negro', hex: '#000000', style: 'Atrevido y moderno' },
+                    { name: 'Verde Menta', hex: '#6EE7B7', style: 'Playful y fresco' }
+                ]
+            }
+        };
+
+        let selectedColor = null;
+
+        function initializeColorGrid() {
+            const colorGrid = document.getElementById('colorGrid');
+            
+            Object.entries(colors).forEach(([colorName, colorData]) => {
+                const colorCard = document.createElement('div');
+                colorCard.className = 'color-card bg-white rounded-xl p-4 shadow-md border-2 border-transparent';
+                colorCard.onclick = () => selectColor(colorName);
+                
+                colorCard.innerHTML = `
+                    <div class="w-full h-20 rounded-lg mb-3" style="background-color: ${colorData.hex}; ${colorData.hex === '#FFFFFF' ? 'border: 1px solid #E5E7EB;' : ''}"></div>
+                    <h3 class="text-sm font-semibold text-gray-800 text-center">${colorName}</h3>
+                    <p class="text-xs text-gray-500 text-center">${colorData.hex}</p>
+                `;
+                
+                colorGrid.appendChild(colorCard);
+            });
+        }
+
+        function selectColor(colorName) {
+            selectedColor = colorName;
+            
+            // Update selected state
+            document.querySelectorAll('.color-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Show combinations
+            showCombinations(colorName);
+            showOutfitPreview(colorName);
+        }
+
+        function showCombinations(colorName) {
+            const combinationsSection = document.getElementById('combinationsSection');
+            const selectedColorName = document.getElementById('selectedColorName');
+            const combinationsList = document.getElementById('combinationsList');
+            
+            selectedColorName.textContent = colorName;
+            combinationsSection.classList.remove('hidden');
+            
+            // Clear previous combinations
+            combinationsList.innerHTML = '';
+            
+            // Add combinations with animation delay
+            colors[colorName].combinations.forEach((combination, index) => {
+                setTimeout(() => {
+                    const combinationCard = document.createElement('div');
+                    combinationCard.className = 'combination-item bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 shadow-md border border-gray-100';
+                    combinationCard.style.animationDelay = `${index * 0.1}s`;
+                    
+                    combinationCard.innerHTML = `
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 rounded-full" style="background-color: ${colors[colorName].hex}; ${colors[colorName].hex === '#FFFFFF' ? 'border: 1px solid #E5E7EB;' : ''}"></div>
+                            <div class="text-2xl">+</div>
+                            <div class="w-12 h-12 rounded-full" style="background-color: ${combination.hex}; ${combination.hex === '#FFFFFF' ? 'border: 1px solid #E5E7EB;' : ''}"></div>
+                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">${colorName} + ${combination.name}</h4>
+                        <p class="text-sm text-gray-600 mb-3">${combination.style}</p>
+                        <div class="flex space-x-2">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Recomendado</span>
+                        </div>
+                    `;
+                    
+                    combinationsList.appendChild(combinationCard);
+                }, index * 100);
+            });
+        }
+
+        function showOutfitPreview(colorName) {
+            const outfitDisplay = document.getElementById('outfitDisplay');
+            const baseColor = colors[colorName];
+            const firstCombination = baseColor.combinations[0];
+            
+            outfitDisplay.innerHTML = `
+                <div class="text-white mb-6">
+                    <h3 class="text-xl font-semibold mb-2">Outfit Sugerido</h3>
+                    <p class="text-blue-100">${colorName} + ${firstCombination.name}</p>
+                </div>
+                
+                <div class="flex justify-center items-end space-x-8">
+                    <!-- Shirt -->
+                    <div class="text-center">
+                        <div class="w-20 h-24 rounded-t-full mx-auto mb-2" style="background-color: ${baseColor.hex}; ${baseColor.hex === '#FFFFFF' ? 'border: 2px solid rgba(255,255,255,0.3);' : ''}"></div>
+                        <p class="text-white text-sm">Camisa</p>
+                    </div>
+                    
+                    <!-- Pants -->
+                    <div class="text-center">
+                        <div class="w-16 h-28 rounded-b-lg mx-auto mb-2" style="background-color: ${firstCombination.hex}; ${firstCombination.hex === '#FFFFFF' ? 'border: 2px solid rgba(255,255,255,0.3);' : ''}"></div>
+                        <p class="text-white text-sm">Pantalón</p>
+                    </div>
+                    
+                    <!-- Shoes -->
+                    <div class="text-center">
+                        <div class="w-12 h-6 rounded-full mx-auto mb-2" style="background-color: #000000;"></div>
+                        <p class="text-white text-sm">Zapatos</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <p class="text-blue-100 text-sm">${firstCombination.style}</p>
+                </div>
+            `;
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeColorGrid();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'95f1134290e7b8e3',t:'MTc1MjQ5NjY4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

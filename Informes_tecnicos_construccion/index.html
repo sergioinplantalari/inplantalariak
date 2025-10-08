@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Visita - Aparejador</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #8B0000;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #8B0000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #8B0000;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .room-card {
+            background: #FFF5F5;
+            border: 2px solid #FFE0E0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .room-card h3 {
+            color: #8B0000;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8B0000 0%, #DC143C 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            width: 100%;
+            justify-content: center;
+            font-size: 18px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .rooms-container {
+            margin-top: 20px;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Informe de Visita Técnica</h1>
+            <p>Genera informes profesionales de manera rápida y eficaz</p>
+        </div>
+
+        <div class="content">
+            <!-- Datos Generales -->
+            <div class="section">
+                <div class="section-title">
+                    🏢 Datos Generales del Inmueble
+                </div>
+                <div class="form-group">
+                    <label>Dirección del Inmueble</label>
+                    <input type="text" id="direccion" placeholder="Calle, número, piso...">
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <input type="text" id="cliente" placeholder="Nombre del cliente">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de Visita</label>
+                        <input type="date" id="fecha">
+                    </div>
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label>Superficie Total (m²)</label>
+                        <input type="number" id="superficie" placeholder="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Año de Construcción</label>
+                        <input type="number" id="anio" placeholder="2000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones Generales</label>
+                    <textarea id="observaciones" placeholder="Descripción general del inmueble, estado, orientación..."></textarea>
+                </div>
+            </div>
+
+            <!-- Estancias -->
+            <div class="section">
+                <div class="section-title">
+                    🚪 Estancias del Inmueble
+                </div>
+                <button class="btn btn-primary" onclick="agregarEstancia()">➕ Añadir Estancia</button>
+                <div class="rooms-container" id="estancias">
+                </div>
+            </div>
+
+            <!-- Instalaciones -->
+            <div class="section">
+                <div class="section-title">
+                    ⚡ Instalaciones y Equipamiento
+                </div>
+                
+                <div class="form-group">
+                    <label>Cuadro Eléctrico</label>
+                    <div class="two-col">
+                        <select id="cuadroElectrico">
+                            <option value="Correcto">Estado Correcto</option>
+                            <option value="Requiere Actualización">Requiere Actualización</option>
+                            <option value="Deficiente">Deficiente</option>
+                            <option value="No Verificado">No Verificado</option>
+                        </select>
+                        <input type="text" id="cuadroDetalle" placeholder="Detalles adicionales...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Fontanería y Tuberías</label>
+                    <div class="two-col">
+                        <select id="tuberias">
+                            <option value="Correcta">Estado Correcto</option>
+                            <option value="Fugas Detectadas">Fugas Detectadas</option>
+                            <option value="Requiere Renovación">Requiere Renovación</option>
+                            <option value="No Verificado">No Verificado</option>
+                        </select>
+                        <input type="text" id="tuberiasDetalle" placeholder="Detalles adicionales...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Calefacción/Climatización</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="calefaccion" value="Calefacción">
+                            <label for="calefaccion">Calefacción</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="aireAcondicionado" value="Aire Acondicionado">
+                            <label for="aireAcondicionado">Aire Acondicionado</label>
+                        </div>
+                    </div>
+                    <textarea id="climaDetalle" placeholder="Detalles sobre el sistema..." style="margin-top: 10px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones sobre Instalaciones</label>
+                    <textarea id="instalacionesObs" placeholder="Notas adicionales sobre instalaciones..."></textarea>
+                </div>
+            </div>
+
+            <!-- Acabados -->
+            <div class="section">
+                <div class="section-title">
+                    🎨 Acabados y Estado
+                </div>
+                
+                <div class="form-group">
+                    <label>Estado de la Pintura</label>
+                    <select id="pintura">
+                        <option value="Excelente">Excelente</option>
+                        <option value="Bueno">Bueno</option>
+                        <option value="Regular - Requiere repaso">Regular - Requiere repaso</option>
+                        <option value="Deficiente - Requiere renovación completa">Deficiente - Requiere renovación completa</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Suelos</label>
+                    <textarea id="suelos" placeholder="Tipo de suelo, estado, materiales..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Carpintería (Puertas y Ventanas)</label>
+                    <textarea id="carpinteria" placeholder="Estado, materiales, funcionamiento..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones sobre Acabados</label>
+                    <textarea id="acabadosObs" placeholder="Detalles adicionales sobre el estado general..."></textarea>
+                </div>
+            </div>
+
+            <!-- Conclusiones -->
+            <div class="section">
+                <div class="section-title">
+                    📝 Conclusiones y Recomendaciones
+                </div>
+                <div class="form-group">
+                    <textarea id="conclusiones" placeholder="Resumen de la visita, recomendaciones, trabajos necesarios..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="generarPDF()">📄 Generar Informe PDF</button>
+        </div>
+    </div>
+
+    <script>
+        let contadorEstancias = 0;
+        const { jsPDF } = window.jspdf;
+
+        // Establecer fecha actual
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        function agregarEstancia() {
+            contadorEstancias++;
+            const container = document.getElementById('estancias');
+            const estancia = document.createElement('div');
+            estancia.className = 'room-card';
+            estancia.id = `estancia-${contadorEstancias}`;
+            estancia.innerHTML = `
+                <h3>Estancia ${contadorEstancias}</h3>
+                <div class="form-group">
+                    <label>Tipo de Estancia</label>
+                    <select id="tipo-${contadorEstancias}">
+                        <option value="Salón">Salón</option>
+                        <option value="Dormitorio">Dormitorio</option>
+                        <option value="Cocina">Cocina</option>
+                        <option value="Baño">Baño</option>
+                        <option value="Pasillo">Pasillo</option>
+                        <option value="Terraza">Terraza</option>
+                        <option value="Trastero">Trastero</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label>Superficie (m²)</label>
+                        <input type="number" id="m2-${contadorEstancias}" placeholder="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Color/Pintura</label>
+                        <input type="text" id="color-${contadorEstancias}" placeholder="Blanco, beige...">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="obs-${contadorEstancias}" placeholder="Estado, iluminación, ventilación..."></textarea>
+                </div>
+                <button class="remove-btn" onclick="eliminarEstancia(${contadorEstancias})">🗑️ Eliminar</button>
+            `;
+            container.appendChild(estancia);
+        }
+
+        function eliminarEstancia(id) {
+            const estancia = document.getElementById(`estancia-${id}`);
+            if (estancia) {
+                estancia.remove();
+            }
+        }
+
+        function generarPDF() {
+            const doc = new jsPDF();
+            let y = 20;
+
+            // Encabezado
+            doc.setFillColor(139, 0, 0);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('INFORME DE VISITA TÉCNICA', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Inspección Profesional de Inmueble', 105, 30, { align: 'center' });
+            
+            y = 50;
+            doc.setTextColor(0, 0, 0);
+
+            // Datos Generales
+            doc.setFillColor(139, 0, 0);
+            doc.rect(10, y, 190, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('DATOS GENERALES', 15, y + 6);
+            y += 15;
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+
+            const direccion = document.getElementById('direccion').value || 'No especificado';
+            const cliente = document.getElementById('cliente').value || 'No especificado';
+            const fecha = document.getElementById('fecha').value || 'No especificado';
+            const superficie = document.getElementById('superficie').value || 'No especificado';
+            const anio = document.getElementById('anio').value || 'No especificado';
+
+            doc.text(`Dirección: ${direccion}`, 15, y);
+            y += 7;
+            doc.text(`Cliente: ${cliente}`, 15, y);
+            y += 7;
+            doc.text(`Fecha de visita: ${fecha}`, 15, y);
+            doc.text(`Superficie: ${superficie} m²`, 120, y);
+            y += 7;
+            doc.text(`Año de construcción: ${anio}`, 15, y);
+            y += 10;
+
+            const observaciones = document.getElementById('observaciones').value;
+            if (observaciones) {
+                doc.setFontSize(9);
+                const obsLines = doc.splitTextToSize(`Observaciones: ${observaciones}`, 180);
+                doc.text(obsLines, 15, y);
+                y += obsLines.length * 5 + 5;
+            }
+
+            // Estancias
+            const estancias = document.querySelectorAll('.room-card');
+            if (estancias.length > 0) {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFillColor(139, 0, 0);
+                doc.rect(10, y, 190, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.text('ESTANCIAS', 15, y + 6);
+                y += 15;
+                doc.setTextColor(0, 0, 0);
+
+                estancias.forEach((estancia, index) => {
+                    if (y > 260) {
+                        doc.addPage();
+                        y = 20;
+                    }
+
+                    const id = estancia.id.split('-')[1];
+                    const tipo = document.getElementById(`tipo-${id}`).value;
+                    const m2 = document.getElementById(`m2-${id}`).value || 'N/A';
+                    const color = document.getElementById(`color-${id}`).value || 'N/A';
+                    const obs = document.getElementById(`obs-${id}`).value || 'Sin observaciones';
+
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`${tipo} - ${m2} m²`, 15, y);
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(9);
+                    y += 6;
+                    doc.text(`Color: ${color}`, 15, y);
+                    y += 5;
+                    const obsLines = doc.splitTextToSize(`Observaciones: ${obs}`, 180);
+                    doc.text(obsLines, 15, y);
+                    y += obsLines.length * 5 + 8;
+                });
+            }
+
+            // Instalaciones
+            if (y > 240) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.setFillColor(139, 0, 0);
+            doc.rect(10, y, 190, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('INSTALACIONES Y EQUIPAMIENTO', 15, y + 6);
+            y += 15;
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+
+            const cuadro = document.getElementById('cuadroElectrico').value;
+            const cuadroDetalle = document.getElementById('cuadroDetalle').value;
+            doc.text(`Cuadro Eléctrico: ${cuadro}`, 15, y);
+            y += 6;
+            if (cuadroDetalle) {
+                doc.setFontSize(9);
+                doc.text(`  ${cuadroDetalle}`, 15, y);
+                y += 5;
+            }
+            y += 3;
+
+            const tuberias = document.getElementById('tuberias').value;
+            const tuberiasDetalle = document.getElementById('tuberiasDetalle').value;
+            doc.setFontSize(10);
+            doc.text(`Fontanería: ${tuberias}`, 15, y);
+            y += 6;
+            if (tuberiasDetalle) {
+                doc.setFontSize(9);
+                doc.text(`  ${tuberiasDetalle}`, 15, y);
+                y += 5;
+            }
+            y += 3;
+
+            const calef = document.getElementById('calefaccion').checked;
+            const aire = document.getElementById('aireAcondicionado').checked;
+            const climaDetalle = document.getElementById('climaDetalle').value;
+            const sistemas = [];
+            if (calef) sistemas.push('Calefacción');
+            if (aire) sistemas.push('Aire Acondicionado');
+            doc.setFontSize(10);
+            doc.text(`Climatización: ${sistemas.length > 0 ? sistemas.join(', ') : 'No especificado'}`, 15, y);
+            y += 6;
+            if (climaDetalle) {
+                doc.setFontSize(9);
+                const climaLines = doc.splitTextToSize(`  ${climaDetalle}`, 180);
+                doc.text(climaLines, 15, y);
+                y += climaLines.length * 5;
+            }
+            y += 5;
+
+            const instObs = document.getElementById('instalacionesObs').value;
+            if (instObs) {
+                doc.setFontSize(9);
+                const instLines = doc.splitTextToSize(`Observaciones: ${instObs}`, 180);
+                doc.text(instLines, 15, y);
+                y += instLines.length * 5 + 5;
+            }
+
+            // Acabados
+            if (y > 240) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.setFillColor(102, 126, 234);
+            doc.rect(10, y, 190, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text('ACABADOS Y ESTADO', 15, y + 6);
+            y += 15;
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+
+            const pintura = document.getElementById('pintura').value;
+            doc.text(`Pintura: ${pintura}`, 15, y);
+            y += 7;
+
+            const suelos = document.getElementById('suelos').value;
+            if (suelos) {
+                const suelosLines = doc.splitTextToSize(`Suelos: ${suelos}`, 180);
+                doc.text(suelosLines, 15, y);
+                y += suelosLines.length * 5 + 3;
+            }
+
+            const carpinteria = document.getElementById('carpinteria').value;
+            if (carpinteria) {
+                const carpLines = doc.splitTextToSize(`Carpintería: ${carpinteria}`, 180);
+                doc.text(carpLines, 15, y);
+                y += carpLines.length * 5 + 3;
+            }
+
+            const acabadosObs = document.getElementById('acabadosObs').value;
+            if (acabadosObs) {
+                const acabLines = doc.splitTextToSize(`Observaciones: ${acabadosObs}`, 180);
+                doc.text(acabLines, 15, y);
+                y += acabLines.length * 5 + 5;
+            }
+
+            // Conclusiones
+            const conclusiones = document.getElementById('conclusiones').value;
+            if (conclusiones) {
+                if (y > 230) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFillColor(102, 126, 234);
+                doc.rect(10, y, 190, 8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(14);
+                doc.text('CONCLUSIONES Y RECOMENDACIONES', 15, y + 6);
+                y += 15;
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                const concLines = doc.splitTextToSize(conclusiones, 180);
+                doc.text(concLines, 15, y);
+            }
+
+            // Pie de página
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(`Página ${i} de ${pageCount}`, 105, 287, { align: 'center' });
+                doc.text(`Generado el ${new Date().toLocaleDateString('es-ES')}`, 105, 292, { align: 'center' });
+            }
+
+            // Guardar
+            const nombreArchivo = `Informe_${cliente.replace(/\s/g, '_')}_${fecha}.pdf`;
+            doc.save(nombreArchivo);
+        }
+
+        // Agregar una estancia por defecto
+        agregarEstancia();
+    </script>
+</body>
+</html>
