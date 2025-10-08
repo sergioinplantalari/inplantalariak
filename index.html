@@ -1,61 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>InplantalariAPPs</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-            background-color: #f6f8fa;
-            color: #24292e;
-            margin: 0;
-            padding: 40px 20px;
-            line-height: 1.5;
-        }
-        h1 {
-            font-weight: 600;
-            font-size: 2rem;
-            color: #24292e;
-            margin-bottom: 1em;
-        }
-        p {
-            font-size: 1.1rem;
-            margin-bottom: 2em;
-            color: #57606a;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        li {
-            margin-bottom: 12px;
-        }
-        a {
-            display: block;
-            padding: 10px 15px;
-            background-color: #eff3f6;
-            border: 1px solid #d1d5da;
-            border-radius: 6px;
-            color: #0366d6;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
-        }
-        a:hover {
-            background-color: #e1e4e8;
-            border-color: #a8aeb4;
-            text-decoration: underline;
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>Panel de Proyectos y Documentos</title>
+<link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg" />
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    background-color: #222;
+    color: #eee;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #ff0000;
+    margin-bottom: 10px;
+  }
+  p {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  a {
+    display: block;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border: 2px solid #ff0000;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  a:hover {
+    background-color: #ff0000;
+    color: #fff;
+    border-color: #cc0000;
+  }
+  @media(max-width: 600px) {
+    body { padding: 20px; }
+  }
+</style>
 </head>
 <body>
-    <h1>Welcome to InplantalariAPPs</h1>
-    <p>Haz clic en la app que quieras visitar:</p>
-    <ul>
-        <li><a href="https://sergioinplantalari.github.io/inplantalariak/Liga_futbol/index.html">⚽Liga fútbol</a></li>
-        <!-- Agrega aquí más enlaces conforme subas nuevas apps -->
-    </ul>
+
+<h1>Proyecto: Documentos y Apps</h1>
+<p>Navega por las diferentes aplicaciones, documentos y plugins. ¡Haz clic en el nombre para abrir!</p>
+
+<div class="grid">
+  <a href="/Combinación_colores_moda/index.html">Combinación de Colores Moda</a>
+  <a href="/Contador_tiempo/index.html">Contador de Tiempo</a>
+  <a href="/Contrato_confidencialidad/index.html">Contrato de Confidencialidad</a>
+  <a href="/Contrato_fotografa/index.html">Contrato Fotógrafa</a>
+  <a href="/Crear_estructura_carpetas_Python/crear_estructura_carpetas.py">Crear Estructura (Python)</a>
+  <a href="/Crear_estructura_carpetas_Python/readme.md">Documentación (README)</a>
+  <a href="/Gestion_clases_danza/index.html">Clases de Danza</a>
+  <a href="/Gestor_tareas/index.html">Gestor de Tareas</a>
+  <a href="/Informes_tecnicos_construccion/index.html">Informes Técnicos</a>
+  <a href="/Partes_trabajo_incidencias/index.html">Partes de Trabajo</a>
+  <a href="/Presupuesto_gremios/index.html">Presupuesto Gremios</a>
+  <a href="/Sistema_Fichajes/index.html">Sistema de Fichajes</a>
+  <a href="/Chatbot_documental/index.html">Chatbot Documental</a>
+  <a href="/Liga_futbol/index.html">⚽ Liga fútbol</a>
+</div>
+
 </body>
 </html>
