@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Nueva cita | CRM{% endblock %}
+{% block content %}
+<h2>Nueva cita</h2>
+<form method="post" class="form-grid">
+  <label>Paciente
+    <select name="patient_id" required>
+      {% for p in patients %}
+      <option value="{{ p.id }}">{{ p.full_name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Servicio
+    <select name="service_id" required>
+      {% for s in services %}
+      <option value="{{ s.id }}">{{ s.name }} ({{ s.price_cents|eur }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Fecha y hora
+    <input type="datetime-local" name="scheduled_at" required />
+  </label>
+  <label>Notas
+    <textarea name="notes" rows="3"></textarea>
+  </label>
+  <div class="form-actions">
+    <button type="submit" class="button">Guardar</button>
+    <a href="/citas" class="button secondary">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

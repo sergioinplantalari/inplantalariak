@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Pacientes | CRM{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h2>Pacientes</h2>
+  <a class="button" href="/pacientes/nuevo">Nuevo paciente</a>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Teléfono</th>
+      <th>Email</th>
+      <th>Ciudad</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in patients %}
+    <tr>
+      <td>{{ p.full_name }}</td>
+      <td>{{ p.phone or '-' }}</td>
+      <td>{{ p.email or '-' }}</td>
+      <td>{{ p.city or '-' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Nueva factura | CRM{% endblock %}
+{% block content %}
+<h2>Nueva factura</h2>
+<form method="post" class="form-grid">
+  <label>Cita
+    <select name="appointment_id" required>
+      {% for a in appointments %}
+      <option value="{{ a.id }}">{{ a.scheduled_at.strftime('%d/%m/%Y %H:%M') }} - {{ a.patient.full_name }} - {{ a.service.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>
+    <input type="checkbox" name="paid" value="1" /> Marcar como pagada
+  </label>
+  <div class="form-actions">
+    <button type="submit" class="button">Crear factura</button>
+    <a href="/facturas" class="button secondary">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

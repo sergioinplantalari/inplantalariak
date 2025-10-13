@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Factura {{ invoice.number }} | CRM{% endblock %}
+{% block content %}
+<h2>Factura {{ invoice.number }}</h2>
+<p><strong>Fecha:</strong> {{ invoice.issue_date.strftime('%d/%m/%Y') }}</p>
+<p><strong>Paciente:</strong> {{ invoice.patient.full_name }}</p>
+<table>
+  <thead>
+    <tr>
+      <th>Descripción</th>
+      <th>Cant.</th>
+      <th>Precio unitario</th>
+      <th>Importe</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for it in invoice.items %}
+    <tr>
+      <td>{{ it.description }}</td>
+      <td>{{ it.quantity }}</td>
+      <td>{{ it.unit_price_cents|eur }}</td>
+      <td>{{ it.line_total_cents|eur }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3" class="right">Subtotal</td>
+      <td>{{ invoice.subtotal_cents|eur }}</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="right">IVA {{ invoice.tax_percent }}%</td>
+      <td>{{ invoice.tax_cents|eur }}</td>
+    </tr>
+    <tr>
+      <td colspan="3" class="right"><strong>Total</strong></td>
+      <td><strong>{{ invoice.total_cents|eur }}</strong></td>
+    </tr>
+  </tfoot>
+</table>
+<p><strong>Estado:</strong> {{ 'Pagada' if invoice.paid else 'Pendiente' }}</p>
+<a href="/facturas" class="button">Volver</a>
+{% endblock %}

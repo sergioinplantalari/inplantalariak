@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Facturas | CRM{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h2>Facturas</h2>
+  <a class="button" href="/facturas/nueva">Nueva factura</a>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Número</th>
+      <th>Fecha</th>
+      <th>Paciente</th>
+      <th>Total</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in invoices %}
+    <tr>
+      <td><a href="/facturas/{{ f.id }}">{{ f.number }}</a></td>
+      <td>{{ f.issue_date.strftime('%d/%m/%Y') }}</td>
+      <td>{{ f.patient.full_name }}</td>
+      <td>{{ f.total_cents|eur }}</td>
+      <td>{{ 'Pagada' if f.paid else 'Pendiente' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
