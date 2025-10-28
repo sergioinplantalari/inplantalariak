@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Citas | CRM{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h2>Citas</h2>
+  <a class="button" href="/citas/nueva">Nueva cita</a>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Paciente</th>
+      <th>Servicio</th>
+      <th>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in appointments %}
+    <tr>
+      <td>{{ a.scheduled_at.strftime('%d/%m/%Y %H:%M') }}</td>
+      <td>{{ a.patient.full_name }}</td>
+      <td>{{ a.service.name }}</td>
+      <td>{{ a.status }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

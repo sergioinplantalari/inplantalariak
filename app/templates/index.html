@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Panel | CRM Fisioterapia Bizkaia{% endblock %}
+{% block content %}
+<section class="grid">
+  <div class="card">
+    <h3>Pacientes</h3>
+    <p class="stat">{{ patients_count }}</p>
+  </div>
+  <div class="card">
+    <h3>Próximas citas</h3>
+    <p class="stat">{{ upcoming_count }}</p>
+  </div>
+  <div class="card">
+    <h3>Facturas</h3>
+    <p class="stat">{{ invoices_count }}</p>
+  </div>
+</section>
+<section>
+  <h2>Últimas citas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Paciente</th>
+        <th>Servicio</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in recent_appointments %}
+      <tr>
+        <td>{{ a.scheduled_at.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ a.patient.full_name }}</td>
+        <td>{{ a.service.name }}</td>
+        <td>{{ a.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

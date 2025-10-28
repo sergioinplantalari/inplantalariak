@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Nuevo paciente | CRM{% endblock %}
+{% block content %}
+<h2>Nuevo paciente</h2>
+<form method="post" class="form-grid">
+  <label>Nombre<input type="text" name="first_name" required /></label>
+  <label>Apellidos<input type="text" name="last_name" required /></label>
+  <label>Teléfono<input type="tel" name="phone" /></label>
+  <label>Email<input type="email" name="email" /></label>
+  <label>DNI/NIE<input type="text" name="dni" /></label>
+  <label>Fecha de nacimiento<input type="date" name="date_of_birth" /></label>
+  <label>Dirección<input type="text" name="address" /></label>
+  <label>Ciudad<input type="text" name="city" /></label>
+  <label>Cód. Postal<input type="text" name="zip_code" /></label>
+  <div class="form-actions">
+    <button type="submit" class="button">Guardar</button>
+    <a href="/pacientes" class="button secondary">Cancelar</a>
+  </div>
+</form>
+{% endblock %}
