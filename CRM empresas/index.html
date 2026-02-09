@@ -1,0 +1,418 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CRM Documental — Pro</title>
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --primary: #0f172a;
+    --accent: #2563eb;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --border: #e5e7eb;
+    --chip: #eef2ff;
+    --focus: #93c5fd;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); }
+  header {
+    position: sticky; top:0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border);
+  }
+  .toolbar { display:flex; align-items:center; justify-content:space-between; padding: 14px 18px; }
+  .title { display:flex; align-items:center; gap:12px; }
+  .title h1 { font-size: 1.1rem; margin:0; font-weight: 700; }
+  .title .badge { color:#fff; background: var(--accent); padding:4px 8px; border-radius:999px; font-size:.8rem; }
+  .toolbar .actions { display:flex; gap:10px; flex-wrap: wrap; }
+  button { border:1px solid transparent; border-radius:8px; padding:10px 12px; background: var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+  button.secondary { background:#111827; }
+  button.ghost { background: transparent; color: var(--accent); border-color: var(--accent); }
+  button.danger { background: var(--danger); }
+  button:disabled { opacity:.6; cursor:not-allowed; }
+  .page { padding: 16px; max-width: 1400px; margin: 0 auto; }
+  .layout { display:grid; grid-template-columns: 1.3fr 1fr; gap:16px; }
+  @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
+  .card .card-header { padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight:700; }
+  .card .card-body { padding: 14px 16px; }
+  .muted { color: var(--muted); font-size:.9rem; }
+  .grid { display:grid; gap:12px; }
+  .two { grid-template-columns: 1fr 1fr; }
+  .three { grid-template-columns: 1fr 1fr 1fr; }
+  label { font-weight:600; font-size:.9rem; }
+  input[type=text], input[type=email], select, textarea {
+    width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; margin-top:6px; background:#fff;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; box-shadow: 0 0 0 3px var(--focus); }
+  table { width:100%; border-collapse: collapse; }
+  th, td { text-align:left; padding:10px 8px; border-bottom:1px solid var(--border); font-size:.95rem; }
+  thead th { background:#f9fafb; position: sticky; top: 0; z-index: 1; }
+  tbody tr { cursor:pointer; }
+  tbody tr:hover { background:#f3f4f6; }
+  .row-selected { background:#e5f0ff !important; }
+  .searchbar { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+  .searchbar input { flex:1; }
+  .chips { display:flex; gap:8px; flex-wrap: wrap; margin-top:8px; }
+  .chip { padding:6px 10px; border-radius:999px; font-size:.85rem; background: var(--chip); border:1px solid var(--border); }
+  .chip.success { background:#ecfdf5; border-color:#d1fae5; color:#065f46; }
+  .chip.warning { background:#fffbeb; border-color:#fde68a; color:#92400e; }
+  .chip.danger { background:#fee2e2; border-color:#fecaca; color:#7f1d1d; }
+  .actions { display:flex; gap:8px; flex-wrap: wrap; }
+  .divider { margin: 12px 0; border-top:1px dashed var(--border); }
+  .dropzone { border:2px dashed var(--border); border-radius: 10px; padding: 14px; text-align:center; color: var(--muted); transition: .15s; }
+  .dropzone.drag { border-color: var(--accent); background:#f0f7ff; color:#1e3a8a; }
+  .toast { position: fixed; bottom: 18px; right: 18px; background:#111827; color:#fff; padding: 12px 14px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.25); display:none; }
+  .modal-backdrop { position:fixed; inset:0; background: rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:20; }
+  .modal { background:#fff; border-radius:12px; width:min(900px, 92vw); max-height: 90vh; overflow:auto; }
+  .modal .card-header { display:flex; align-items:center; justify-content:space-between; }
+  .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#f1f5f9; border:1px solid #e2e8f0; border-bottom-width:2px; border-radius:6px; padding:2px 6px; }
+  .help { font-size:.9rem; background:#f9fafb; border:1px solid var(--border); border-radius:8px; padding:10px; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="toolbar">
+      <div class="title">
+        <span style="font-size:1.4rem">📘</span>
+        <h1>CRM Documental — Pro</h1>
+        <span class="badge">HTML5 • IndexedDB</span>
+      </div>
+      <div class="actions">
+        <button id="btnNueva">➕ Nueva</button>
+        <button class="ghost" id="btnExport">⬇️ Exportar</button>
+        <button class="ghost" id="btnImport">⬆️ Importar</button>
+        <input type="file" id="importInput" class="hidden" accept="application/json" />
+        <button class="secondary" id="btnAyuda">❓ Ayuda</button>
+      </div>
+    </div>
+  </header>
+  <main class="page">
+    <div class="layout">
+      <!-- Panel Izquierdo: Búsqueda + Lista -->
+      <section class="card">
+        <div class="card-header">🔎 Buscar y listar empresas</div>
+        <div class="card-body">
+          <div class="searchbar">
+            <input id="searchInput" type="text" placeholder="Buscar (⌘/Ctrl+K)" />
+            <select id="filterSelect">
+              <option>Todos los campos</option>
+              <option>Empresa</option>
+              <option>Contacto</option>
+              <option>Código</option>
+              <option>Teléfono</option>
+              <option>Email</option>
+              <option>Sector</option>
+              <option>Estado</option>
+            </select>
+            <button id="btnBuscar">Buscar</button>
+            <button id="btnLimpiar">Limpiar</button>
+          </div>
+          <div class="chips" id="summaryChips"></div>
+          <div class="divider"></div>
+          <div style="overflow:auto; max-height: 55vh;">
+            <table>
+              <thead>
+                <tr>
+                  <th data-sort="codigo">Código ⬍</th>
+                  <th data-sort="empresa">Empresa ⬍</th>
+                  <th data-sort="contacto">Contacto ⬍</th>
+                  <th data-sort="telefono">Teléfono ⬍</th>
+                  <th data-sort="estado">Estado ⬍</th>
+                  <th data-sort="fecha_creacion">Fecha ⬍</th>
+                </tr>
+              </thead>
+              <tbody id="empresaTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel Derecho: Detalles + Archivos -->
+      <section class="card">
+        <div class="card-header">📇 Detalle de empresa</div>
+        <div class="card-body">
+          <div class="grid two">
+            <div>
+              <label>Código</label>
+              <input id="codigo" type="text" readonly />
+            </div>
+            <div>
+              <label>Empresa</label>
+              <input id="empresa" type="text" placeholder="Nombre de la empresa" />
+            </div>
+          </div>
+          <div class="grid three">
+            <div>
+              <label>Contacto</label>
+              <input id="contacto" type="text" placeholder="Persona de contacto" />
+            </div>
+            <div>
+              <label>Teléfono</label>
+              <input id="telefono" type="text" placeholder="+34 600 000 000" />
+            </div>
+            <div>
+              <label>Email</label>
+              <input id="email" type="email" placeholder="correo@empresa.com" />
+            </div>
+          </div>
+          <div class="grid two">
+            <div>
+              <label>Sector</label>
+              <select id="sector">
+                <option>🏭 Manufactura</option>
+                <option>💻 Tecnología</option>
+                <option>🏗️ Construcción</option>
+                <option>🛍️ Retail</option>
+                <option>🧰 Servicios</option>
+                <option>🏥 Salud</option>
+                <option>🎓 Educación</option>
+                <option>🚗 Automoción</option>
+                <option>🍽️ Hostelería</option>
+                <option>📊 Consultoría</option>
+                <option>Otros</option>
+              </select>
+            </div>
+            <div>
+              <label>Estado</label>
+              <select id="estado">
+                <option>🟢 Activo</option>
+                <option>🟡 En espera</option>
+                <option>🔴 Inactivo</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label>Notas</label>
+            <textarea id="notas" rows="6" placeholder="Notas de cliente/empresa (seguimiento, acuerdos, tareas, etc.)"></textarea>
+          </div>
+          <div class="actions" style="margin-top:10px">
+            <button id="btnGuardar">💾 Guardar</button>
+            <button class="danger" id="btnEliminar">🗑️ Eliminar</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="grid">
+            <div class="actions" style="justify-content:space-between; align-items:center;">
+              <strong>📂 Archivos de la empresa</strong>
+              <div>
+                <button class="ghost" id="btnSubir">📤 Subir</button>
+                <button class="ghost" id="btnDescargarTodo">⬇️ Descargar todo (zip)</button>
+                <input id="fileInput" type="file" multiple class="hidden" />
+              </div>
+            </div>
+            <div id="dropzone" class="dropzone">Arrastra y suelta archivos aquí o usa el botón <span class="kbd">Subir</span></div>
+            <div style="overflow:auto; max-height: 32vh;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nombre</th><th>Tipo</th><th>Tamaño</th><th>Fecha</th><th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="fileTable"></tbody>
+              </table>
+            </div>
+            <div class="muted" id="fileSummary">0 archivos (0 B)</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px;">
+      <div class="card-header">ℹ️ Ayuda rápida</div>
+      <div class="card-body help">
+        <ul>
+          <li><b>Guardar</b>: rellena Empresa y Contacto; el <i>Código</i> se autogenera (3 letras Empresa + 3 letras Contacto + número).</li>
+          <li><b>Búsqueda rápida</b>: pulsa <span class="kbd">Ctrl/⌘+K</span> y escribe; filtra por campo si lo necesitas.</li>
+          <li><b>Archivos</b>: puedes subir, previsualizar (imágenes/PDF) y descargar; todo se guarda en tu navegador.</li>
+          <li><b>Exportar/Importar</b>: usa JSON para llevarte las empresas a otro equipo. (Archivos se exportan como metadatos; los blobs permanecen locales.)</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <div class="card-header">
+        <span id="modalTitle">Vista previa</span>
+        <button id="modalClose" class="ghost">✖️ Cerrar</button>
+      </div>
+      <div class="card-body" id="modalBody"></div>
+    </div>
+  </div>
+
+<script>
+// ================= DB Layer (IndexedDB) =================
+const DB_NAME = 'crm_doc_pro';
+const DB_VERSION = 2; // versioning for upgrades
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      // empresas store
+      if (!db.objectStoreNames.contains('empresas')) {
+        const emp = db.createObjectStore('empresas', { keyPath: 'codigo' });
+        emp.createIndex('by_empresa', 'empresa');
+        emp.createIndex('by_contacto', 'contacto');
+        emp.createIndex('by_email', 'email');
+        emp.createIndex('by_sector', 'sector');
+        emp.createIndex('by_estado', 'estado');
+        emp.createIndex('by_fecha', 'fecha_creacion');
+      }
+      // archivos store
+      if (!db.objectStoreNames.contains('archivos')) {
+        const files = db.createObjectStore('archivos', { keyPath: 'id', autoIncrement: true });
+        files.createIndex('by_empresa', 'empresaCodigo');
+        files.createIndex('by_nombre', 'nombre');
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+function tx(names, mode='readonly') {
+  const t = db.transaction(names, mode);
+  return {
+    store: (n) => t.objectStore(n),
+    done: new Promise((res, rej)=>{ t.oncomplete = ()=> res(); t.onerror=()=> rej(t.error); })
+  };
+}
+// Empresas
+async function allEmpresas() {
+  const { store } = tx(['empresas']);
+  return new Promise((resolve, reject)=>{ const r = store('empresas').getAll(); r.onsuccess=()=>resolve(r.result||[]); r.onerror=()=>reject(r.error); });
+}
+async function getEmpresa(codigo) {
+  const { store } = tx(['empresas']);
+  return new Promise((resolve, reject)=>{ const r = store('empresas').get(codigo); r.onsuccess=()=>resolve(r.result||null); r.onerror=()=>reject(r.error); });
+}
+async function putEmpresa(emp) { const { store, done } = tx(['empresas'], 'readwrite'); store('empresas').put(emp); await done; }
+async function deleteEmpresaDB(codigo) { const { store, done } = tx(['empresas'], 'readwrite'); store('empresas').delete(codigo); await done; }
+// Archivos
+async function addFiles(empresaCodigo, files) { const { store, done } = tx(['archivos'], 'readwrite'); const s=store('archivos'); const now=new Date().toISOString(); for (const f of files){ s.add({empresaCodigo, nombre:f.name, tipo:f.type||'desconocido', tamaño:f.size, fecha: now, blob:f}); } await done; }
+async function filesByEmpresa(empresaCodigo) { const { store } = tx(['archivos']); const idx = store('archivos').index('by_empresa'); return new Promise((resolve, reject)=>{ const r = idx.getAll(empresaCodigo); r.onsuccess=()=>resolve(r.result||[]); r.onerror=()=>reject(r.error); }); }
+async function deleteFile(id) { const { store, done } = tx(['archivos'], 'readwrite'); store('archivos').delete(id); await done; }
+async function getFile(id) { const { store } = tx(['archivos']); return new Promise((resolve, reject)=>{ const r = store('archivos').get(id); r.onsuccess=()=>resolve(r.result); r.onerror=()=>reject(r.error); }); }
+
+// ================= Utilities =================
+const fmtSize = (b)=>{ if(!b) return '0 B'; const u=['B','KB','MB','GB']; let i=0, v=b; while(v>=1024 && i<u.length-1){ v/=1024; i++; } return `${v.toFixed(1)} ${u[i]}`; };
+const fmtDate = (iso)=>{ if(!iso) return 'N/A'; const d=new Date(iso); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); const yy=d.getFullYear(); return `${dd}/${mm}/${yy}`; };
+const cleanCodePart = (t)=> (t||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3);
+async function genCodigo(empresa, contacto){ const base = cleanCodePart(empresa) + cleanCodePart(contacto); const all = await allEmpresas(); const used = new Set(all.filter(e=> (e.codigo||'').startsWith(base)).map(e=>e.codigo)); let n=1; while(true){ const cand = `${base}${String(n).padStart(3,'0')}`; if(!used.has(cand)) return cand; n++; } }
+function toast(msg, type='info'){ const el = document.getElementById('toast'); el.textContent = msg; el.style.display='block'; el.style.background = type==='error'? '#7f1d1d' : type==='success'? '#065f46' : '#111827'; setTimeout(()=> el.style.display='none', 2500); }
+function validateEmail(email){ if(!email) return true; return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function validatePhone(t){ if(!t) return true; return /^\+?\d[\d\s\-]{6,}$/.test(t); }
+
+// ================= UI State =================
+let empresaActual = null; // object or null
+let sortBy = 'empresa'; let sortDir = 'asc';
+const sectorEl = ()=> document.getElementById('sector');
+const estadoEl = ()=> document.getElementById('estado');
+
+function setSelectedRow(codigo){ const rows = Array.from(document.querySelectorAll('#empresaTable tr')); rows.forEach(r=> r.classList.remove('row-selected')); const target = rows.find(r=> r.dataset.code === codigo); if(target) target.classList.add('row-selected'); }
+
+function empresaRow(e){ const tr = document.createElement('tr'); tr.dataset.code = e.codigo; tr.innerHTML = `
+  <td>${e.codigo||''}</td>
+  <td>${e.empresa||''}</td>
+  <td>${e.contacto||''}</td>
+  <td>${e.telefono||''}</td>
+  <td>${e.estado||''}</td>
+  <td>${fmtDate(e.fecha_creacion)}</td>
+`; tr.onclick = ()=> { mostrarDetalle(e); setSelectedRow(e.codigo); }; return tr; }
+
+async function refreshSummaryChips(){ const list = await allEmpresas(); const tot = list.length; const activos = list.filter(e=> (e.estado||'').includes('Act')).length; const espera = list.filter(e=> (e.estado||'').includes('espera')).length; const inactivos = list.filter(e=> (e.estado||'').includes('Inac')).length; const cont = document.getElementById('summaryChips'); cont.innerHTML=''; const mk=(txt, cls)=>{ const c=document.createElement('span'); c.className = 'chip '+cls; c.textContent = txt; return c; }; cont.appendChild(mk(`${tot} empresas`, '')); cont.appendChild(mk(`${activos} activas`, 'success')); cont.appendChild(mk(`${espera} en espera`, 'warning')); cont.appendChild(mk(`${inactivos} inactivas`, 'danger')); }
+
+async function cargarEmpresas(){ const tbody = document.getElementById('empresaTable'); tbody.innerHTML=''; let list = await allEmpresas(); // sort
+ list.sort((a,b)=> { const va = (a[sortBy]||'').toString().toLowerCase(); const vb = (b[sortBy]||'').toString().toLowerCase(); if(va<vb) return sortDir==='asc'? -1:1; if(va>vb) return sortDir==='asc'? 1:-1; return 0; });
+ for (const e of list) tbody.appendChild(empresaRow(e)); await refreshSummaryChips(); }
+
+function clearForm(){ ['codigo','empresa','contacto','telefono','email','notas'].forEach(id=> document.getElementById(id).value=''); sectorEl().selectedIndex=0; estadoEl().selectedIndex=0; }
+function nuevaEmpresa(){ empresaActual=null; clearForm(); document.getElementById('fileTable').innerHTML=''; document.getElementById('fileSummary').textContent='0 archivos (0 B)'; }
+
+async function guardar(){ const empresa = document.getElementById('empresa').value.trim(); if(!empresa){ toast('El nombre de empresa es obligatorio','error'); return; }
+ const contacto = document.getElementById('contacto').value.trim(); const telefono = document.getElementById('telefono').value.trim(); const email = document.getElementById('email').value.trim(); const sector = sectorEl().value; const estado = estadoEl().value; const notas = document.getElementById('notas').value.trim(); if(!validateEmail(email)){ toast('Email no válido','error'); return; } if(!validatePhone(telefono)){ toast('Teléfono no válido','error'); return; }
+ let codigo = document.getElementById('codigo').value.trim(); if(!empresaActual){ if(!codigo){ if(empresa.length>=3 && contacto.length>=3){ codigo = await genCodigo(empresa, contacto); } else { toast('Completa Empresa y Contacto para generar el código','error'); return; } } const nuevo = { codigo, empresa, contacto, telefono, email, sector, estado, notas, fecha_creacion: new Date().toISOString(), updated_at: new Date().toISOString() }; await putEmpresa(nuevo); empresaActual = nuevo; setSelectedRow(codigo); } else { const actualizado = { ...empresaActual, empresa, contacto, telefono, email, sector, estado, notas, updated_at: new Date().toISOString() }; await putEmpresa(actualizado); empresaActual = actualizado; }
+ document.getElementById('codigo').value = codigo; await cargarEmpresas(); toast('Guardado correctamente','success'); }
+
+async function eliminar(){ if(!empresaActual){ toast('Selecciona una empresa','error'); return; } if(!confirm(`¿Eliminar la empresa '${empresaActual.empresa}'?\n\nSe eliminarán sus archivos asociados.`)) return; // borrar archivos asociados
+ const files = await filesByEmpresa(empresaActual.codigo); for (const f of files) await deleteFile(f.id); await deleteEmpresaDB(empresaActual.codigo); nuevaEmpresa(); await cargarEmpresas(); toast('Empresa eliminada','success'); }
+
+// Debounced search
+let searchTimer; function debounceSearch(){ clearTimeout(searchTimer); searchTimer = setTimeout(()=> buscar(), 220); }
+async function buscar(){ const term = document.getElementById('searchInput').value.trim().toLowerCase(); const filtro = document.getElementById('filterSelect').value; const tbody = document.getElementById('empresaTable'); tbody.innerHTML=''; let list = await allEmpresas(); const dictOf = (e)=> ({ 'Empresa': e.empresa||'', 'Contacto': e.contacto||'', 'Código': e.codigo||'', 'Teléfono': e.telefono||'', 'Email': e.email||'', 'Sector': e.sector||'', 'Estado': e.estado||'' }); const filt = (e)=> { if(!term) return true; const d = dictOf(e); if(filtro==='Todos los campos') return Object.values(d).some(v=> v.toLowerCase().includes(term)); return (d[filtro]||'').toLowerCase().includes(term); }; list = list.filter(filt).sort((a,b)=> (a.empresa||'').localeCompare(b.empresa||'')); for (const e of list) tbody.appendChild(empresaRow(e)); }
+function limpiar(){ document.getElementById('searchInput').value=''; cargarEmpresas(); }
+
+// Sorting
+function onSort(e){ const key = e.target.getAttribute('data-sort'); if(!key) return; if(sortBy===key){ sortDir = sortDir==='asc'? 'desc':'asc'; } else { sortBy = key; sortDir = 'asc'; } cargarEmpresas(); }
+
+// Files UI
+async function refreshFiles(){ if(!empresaActual){ document.getElementById('fileTable').innerHTML=''; document.getElementById('fileSummary').textContent='0 archivos (0 B)'; return; } const lista = await filesByEmpresa(empresaActual.codigo); const tbody = document.getElementById('fileTable'); tbody.innerHTML=''; let total=0; for (const a of lista.sort((x,y)=> x.nombre.localeCompare(y.nombre))){ total += a.tamaño||0; const tr = document.createElement('tr'); tr.innerHTML = `
+  <td>${a.nombre}</td>
+  <td>${a.tipo||''}</td>
+  <td>${fmtSize(a.tamaño)}</td>
+  <td>${fmtDate(a.fecha)}</td>
+  <td>
+    <button class="ghost" data-id="${a.id}" data-act="view">👁️</button>
+    <button class="ghost" data-id="${a.id}" data-act="dl">⬇️</button>
+    <button class="danger" data-id="${a.id}" data-act="rm">🗑️</button>
+  </td>`; tbody.appendChild(tr); }
+ document.getElementById('fileSummary').textContent = `${lista.length} archivos (${fmtSize(total)})`; }
+
+async function subir(files){ if(!empresaActual){ toast('Selecciona una empresa','error'); return; } if(!files || files.length===0) return; await addFiles(empresaActual.codigo, files); await refreshFiles(); toast(`Subidos ${files.length} archivo(s)`, 'success'); }
+
+async function fileActions(e){ const btn = e.target.closest('button'); if(!btn) return; const id = Number(btn.getAttribute('data-id')); const act = btn.getAttribute('data-act'); if(act==='rm'){ if(confirm('¿Eliminar archivo?')){ await deleteFile(id); await refreshFiles(); } } else if (act==='dl'){ try { const r = await getFile(id); const url = URL.createObjectURL(r.blob); const a = document.createElement('a'); a.href=url; a.download=r.nombre; a.click(); setTimeout(()=> URL.revokeObjectURL(url), 1000); } catch(err){ toast('No se pudo descargar','error'); } } else if (act==='view'){ try { const r = await getFile(id); const url = URL.createObjectURL(r.blob); openPreview(r.nombre, r.tipo, url); } catch(err){ toast('No se pudo abrir','error'); } } }
+
+// Modal preview
+function openPreview(nombre, tipo, url){ const body = document.getElementById('modalBody'); body.innerHTML=''; const title = document.getElementById('modalTitle'); title.textContent = `Vista previa: ${nombre}`; const isImg = tipo.startsWith('image/'); const isPdf = tipo==='application/pdf'; if(isImg){ const img = document.createElement('img'); img.src = url; img.style.maxWidth = '100%'; img.style.borderRadius = '8px'; body.appendChild(img); } else if (isPdf){ const emb = document.createElement('embed'); emb.src = url; emb.type = 'application/pdf'; emb.style.width = '100%'; emb.style.height = '70vh'; body.appendChild(emb); } else { const p = document.createElement('p'); p.className='muted'; p.innerHTML = 'Tipo no soportado para vista previa. Usa <b>Descargar</b>.'; body.appendChild(p); }
+ document.getElementById('modalBackdrop').style.display='flex'; }
+function closePreview(){ document.getElementById('modalBackdrop').style.display='none'; document.getElementById('modalBody').innerHTML=''; }
+
+// Export / Import
+async function exportJSON(){ const empresas = await allEmpresas(); const { store } = tx(['archivos']); const r = await new Promise((res, rej)=>{ const req = store('archivos').getAll(); req.onsuccess=()=>res(req.result||[]); req.onerror=()=>rej(req.error); }); const payload = { empresas, archivos: r.map(a=> ({id:a.id, empresaCodigo:a.empresaCodigo, nombre:a.nombre, tipo:a.tipo, tamaño:a.tamaño, fecha:a.fecha})) }; const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='crm_export.json'; a.click(); setTimeout(()=> URL.revokeObjectURL(url), 1000); toast('Exportado a crm_export.json','success'); }
+async function importJSON(file){ try { const text = await file.text(); const data = JSON.parse(text); if(!data || !Array.isArray(data.empresas)) throw new Error('Estructura inválida'); const { store, done } = tx(['empresas'], 'readwrite'); for (const e of data.empresas){ store('empresas').put(e); } await done; await cargarEmpresas(); toast('Importación completada (empresas)','success'); } catch(err){ toast('Error importando: '+err.message, 'error'); } }
+
+// Seed
+async function seed(){ const list = await allEmpresas(); if(list.length>0) return; const ejemplos=[
+ {codigo:'TEA001', empresa:'TEA Adhesivos', contacto:'Juan Pérez', telefono:'+34 944 111 222', email:'juan@tea.com', sector:'🏭 Manufactura', estado:'🟢 Activo', notas:'Cliente estratégico para adhesivos industriales', fecha_creacion:'2024-01-15T00:00:00.000Z', updated_at:'2024-01-15T00:00:00.000Z'},
+ {codigo:'STS002', empresa:'STS Solutions', contacto:'María García', telefono:'+34 944 222 333', email:'maria@sts.com', sector:'💻 Tecnología', estado:'🟢 Activo', notas:'Especialistas en automatización', fecha_creacion:'2024-02-20T00:00:00.000Z', updated_at:'2024-02-20T00:00:00.000Z'},
+ {codigo:'BOR003', empresa:'Instalaciones Boro', contacto:'Carlos López', telefono:'+34 944 333 444', email:'carlos@boro.com', sector:'🏗️ Construcción', estado:'🔴 Inactivo', notas:'Proyecto de reformas completado', fecha_creacion:'2024-03-10T00:00:00.000Z', updated_at:'2024-03-10T00:00:00.000Z'},
+ {codigo:'PER004', empresa:'Persianas Muñoz', contacto:'Ana Martínez', telefono:'+34 944 444 555', email:'ana@persianas.com', sector:'🛍️ Retail', estado:'🟡 En espera', notas:'Interesados en sistema motorizado', fecha_creacion:'2024-04-05T00:00:00.000Z', updated_at:'2024-04-05T00:00:00.000Z'},
+]; for (const e of ejemplos) await putEmpresa(e); }
+
+// Hotkeys
+function onKey(e){ if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); document.getElementById('searchInput').focus(); }}
+
+// Drag & Drop
+function setupDropzone(){ const dz = document.getElementById('dropzone'); ['dragenter','dragover'].forEach(evt=> dz.addEventListener(evt, (e)=>{ e.preventDefault(); dz.classList.add('drag'); })); ['dragleave','drop'].forEach(evt=> dz.addEventListener(evt, (e)=>{ e.preventDefault(); dz.classList.remove('drag'); })); dz.addEventListener('drop', async (e)=>{ const files = e.dataTransfer.files; await subir(files); }); }
+
+// Descargar todo (zip) — sin compresión, solo descarga secuencial
+async function descargarTodo(){ if(!empresaActual){ toast('Selecciona una empresa','error'); return; } const lista = await filesByEmpresa(empresaActual.codigo); for (const f of lista){ const url = URL.createObjectURL(f.blob); const a=document.createElement('a'); a.href=url; a.download=f.nombre; a.click(); setTimeout(()=> URL.revokeObjectURL(url), 500); } toast('Descargando archivos...', 'info'); }
+
+// Init
+async function init(){ try { db = await openDB(); await seed(); await cargarEmpresas(); await refreshSummaryChips(); // bind
+ document.getElementById('btnNueva').onclick = nuevaEmpresa; document.getElementById('btnGuardar').onclick = guardar; document.getElementById('btnEliminar').onclick = eliminar; document.getElementById('btnBuscar').onclick = buscar; document.getElementById('btnLimpiar').onclick = limpiar; document.getElementById('btnExport').onclick = exportJSON; document.getElementById('btnImport').onclick = ()=> document.getElementById('importInput').click(); document.getElementById('importInput').onchange = (e)=> { if(e.target.files[0]) importJSON(e.target.files[0]); e.target.value=''; };
+ document.getElementById('empresa').addEventListener('input', async ()=>{ if(!empresaActual){ const empresa = document.getElementById('empresa').value.trim(); const contacto = document.getElementById('contacto').value.trim(); if(empresa.length>=3 && contacto.length>=3){ const cod = await genCodigo(empresa, contacto); const inp = document.getElementById('codigo'); inp.value = cod; } } });
+ document.getElementById('contacto').addEventListener('input', async ()=>{ if(!empresaActual){ const empresa = document.getElementById('empresa').value.trim(); const contacto = document.getElementById('contacto').value.trim(); if(empresa.length>=3 && contacto.length>=3){ const cod = await genCodigo(empresa, contacto); const inp = document.getElementById('codigo'); inp.value = cod; } } });
+ document.getElementById('fileTable').addEventListener('click', fileActions); document.getElementById('btnSubir').onclick = ()=> document.getElementById('fileInput').click(); document.getElementById('fileInput').onchange = async (e)=>{ await subir(e.target.files); e.target.value=''; }; document.getElementById('btnDescargarTodo').onclick = descargarTodo; document.getElementById('searchInput').addEventListener('input', debounceSearch); document.querySelector('thead').addEventListener('click', onSort);
+ setupDropzone();
+ document.getElementById('modalClose').onclick = closePreview; document.getElementById('modalBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='modalBackdrop') closePreview(); });
+ document.addEventListener('keydown', onKey);
+ toast('Listo. Datos persistentes con IndexedDB.', 'success'); } catch(err){ console.error(err); alert('Error inicializando DB: '+ err.message); } }
+
+function mostrarDetalle(emp){ empresaActual = emp; document.getElementById('codigo').value = emp.codigo||''; document.getElementById('empresa').value = emp.empresa||''; document.getElementById('contacto').value = emp.contacto||''; document.getElementById('telefono').value = emp.telefono||''; document.getElementById('email').value = emp.email||''; document.getElementById('sector').value = emp.sector||''; document.getElementById('estado').value = emp.estado||''; document.getElementById('notas').value = emp.notas||''; refreshFiles(); }
+
+init();
+</script>
+</body>
+</html>
