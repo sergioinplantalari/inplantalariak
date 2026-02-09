@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CRM Legal Pro — Control de Expedientes</title>
+<style>
+  :root {
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --primary: #0f172a;
+    --accent: #1e40af; 
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --border: #e5e7eb;
+    --chip: #eef2ff;
+    --focus: #93c5fd;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); }
+  header {
+    position: sticky; top:0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border);
+  }
+  .toolbar { display:flex; align-items:center; justify-content:space-between; padding: 14px 18px; }
+  .title { display:flex; align-items:center; gap:12px; }
+  .title h1 { font-size: 1.1rem; margin:0; font-weight: 700; }
+  .title .badge { color:#fff; background: var(--accent); padding:4px 8px; border-radius:999px; font-size:.8rem; }
+  .toolbar .actions { display:flex; gap:10px; flex-wrap: wrap; }
+  button { border:1px solid transparent; border-radius:8px; padding:10px 12px; background: var(--accent); color:#fff; font-weight:600; cursor:pointer; display: flex; align-items: center; gap: 6px; }
+  button.secondary { background:#111827; }
+  button.ghost { background: transparent; color: var(--accent); border-color: var(--accent); }
+  button.danger { background: var(--danger); }
+  button.demo { background: var(--warning); color: #000; }
+  button:disabled { opacity:.6; cursor:not-allowed; }
+  .page { padding: 16px; max-width: 1400px; margin: 0 auto; }
+  .layout { display:grid; grid-template-columns: 1.1fr 1.2fr; gap:16px; }
+  @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.06); margin-bottom: 16px; }
+  .card .card-header { padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight:700; display: flex; justify-content: space-between; align-items: center; }
+  .card .card-body { padding: 14px 16px; }
+  .muted { color: var(--muted); font-size:.9rem; }
+  .grid { display:grid; gap:12px; }
+  .two { grid-template-columns: 1fr 1fr; }
+  .three { grid-template-columns: 1fr 1fr 1fr; }
+  label { font-weight:600; font-size:.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.025em; }
+  input[type=text], input[type=email], select, textarea {
+    width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; margin-top:6px; background:#fff; font-size: 0.95rem;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; box-shadow: 0 0 0 3px var(--focus); }
+  table { width:100%; border-collapse: collapse; }
+  th, td { text-align:left; padding:12px 8px; border-bottom:1px solid var(--border); font-size:.95rem; }
+  thead th { background:#f9fafb; position: sticky; top: 0; z-index: 1; color: var(--muted); font-weight: 600; cursor: pointer; }
+  tbody tr { cursor:pointer; }
+  tbody tr:hover { background:#f3f4f6; }
+  .row-selected { background:#e5f0ff !important; }
+  .searchbar { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+  .searchbar input { flex:1; }
+  .chips { display:flex; gap:8px; flex-wrap: wrap; margin-top:8px; }
+  .chip { padding:6px 10px; border-radius:999px; font-size:.85rem; background: var(--chip); border:1px solid var(--border); }
+  .chip.success { background:#ecfdf5; border-color:#d1fae5; color:#065f46; }
+  .chip.warning { background:#fffbeb; border-color:#fde68a; color:#92400e; }
+  .chip.danger { background:#fee2e2; border-color:#fecaca; color:#7f1d1d; }
+  .divider { margin: 12px 0; border-top:1px dashed var(--border); }
+  .dropzone { border:2px dashed var(--border); border-radius: 10px; padding: 20px; text-align:center; color: var(--muted); transition: .15s; }
+  .dropzone.drag { border-color: var(--accent); background:#f0f7ff; color:#1e3a8a; }
+  .toast { position: fixed; bottom: 18px; right: 18px; background:#111827; color:#fff; padding: 12px 14px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.25); display:none; z-index: 100; }
+  .modal-backdrop { position:fixed; inset:0; background: rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; z-index:20; }
+  .modal { background:#fff; border-radius:12px; width:min(900px, 92vw); max-height: 90vh; overflow:auto; }
+  
+  /* Timer UI */
+  .timer-display { font-family: monospace; font-size: 2.2rem; font-weight: bold; color: var(--accent); background: #f1f5f9; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 12px; border: 1px solid var(--border); }
+  .total-time-badge { background: #e0e7ff; color: #3730a3; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; border: 1px solid #c7d2fe; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="toolbar">
+      <div class="title">
+        <span style="font-size:1.4rem">⚖️</span>
+        <h1>CRM Legal Pro</h1>
+        <span class="badge">Edición Multinacionales</span>
+      </div>
+      <div class="actions">
+        <button id="btnNueva">➕ Nuevo Expediente</button>
+        <button id="btnDemo" class="demo">🚀 Cargar 10 Demos</button>
+        <button class="ghost" id="btnExport">⬇️ Exportar</button>
+        <button class="secondary" id="btnAyuda">❓ Ayuda</button>
+      </div>
+    </div>
+  </header>
+  <main class="page">
+    <div class="layout">
+      <!-- Panel Izquierdo -->
+      <section>
+        <article class="card">
+          <div class="card-header">🔎 Localizar Cliente / Expediente</div>
+          <div class="card-body">
+            <div class="searchbar">
+              <input id="searchInput" type="text" placeholder="Buscar expediente (Ref, Cliente, Email...)" />
+              <button id="btnBuscar">Buscar</button>
+              <button id="btnLimpiar" class="ghost">Limpiar</button>
+            </div>
+            <div class="chips" id="summaryChips"></div>
+            <div class="divider"></div>
+            <div style="overflow:auto; max-height: 65vh;">
+              <table>
+                <thead>
+                  <tr>
+                    <th id="sort-codigo">Ref ⬍</th>
+                    <th id="sort-empresa">Cliente/Asunto ⬍</th>
+                    <th id="sort-estado">Estado ⬍</th>
+                    <th id="sort-tiempo">Tiempo Total ⬍</th>
+                  </tr>
+                </thead>
+                <tbody id="empresaTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Panel Derecho -->
+      <section>
+        <!-- Card Cronómetro -->
+        <article class="card" id="timerCard">
+          <div class="card-header">
+            <span>⏱️ Registro de Horas</span>
+            <div id="totalTimeContainer" class="total-time-badge hidden">
+              Acumulado: <span id="valTotalAcumulado">0h 0m</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="actions" style="justify-content: center; gap: 15px;">
+              <button id="btnStartTimer" class="success" style="padding: 12px 24px;">▶️ Iniciar Sesión</button>
+              <button id="btnPauseTimer" class="warning hidden" style="padding: 12px 24px;">⏸️ Pausar</button>
+              <button id="btnStopTimer" class="danger hidden" style="padding: 12px 24px;">⏹️ Finalizar y Guardar</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">📇 Detalle del Expediente</div>
+          <div class="card-body">
+            <div class="grid two">
+              <div>
+                <label>Referencia Interna</label>
+                <input id="codigo" type="text" readonly style="background:#f9fafb" />
+              </div>
+              <div>
+                <label>Multinacional / Cliente</label>
+                <input id="empresa" type="text" placeholder="Ej: Google Spain S.L." />
+              </div>
+            </div>
+            <div class="grid three">
+              <div>
+                <label>Legal Counsel / Contacto</label>
+                <input id="contacto" type="text" placeholder="Nombre del abogado in-house" />
+              </div>
+              <div>
+                <label>Teléfono Directo</label>
+                <input id="telefono" type="text" />
+              </div>
+              <div>
+                <label>Email Corporativo</label>
+                <input id="email" type="email" />
+              </div>
+            </div>
+            <div class="grid two">
+              <div>
+                <label>Rama del Derecho</label>
+                <select id="sector">
+                  <option>⚖️ Derecho Civil</option>
+                  <option>⚖️ Derecho Penal</option>
+                  <option>⚖️ Derecho Laboral</option>
+                  <option>⚖️ Derecho Mercantil</option>
+                  <option>⚖️ Derecho Administrativo</option>
+                  <option>⚖️ Propiedad Intelectual</option>
+                  <option>⚖️ Fiscal / Tributario</option>
+                </select>
+              </div>
+              <div>
+                <label>Estado Procesal</label>
+                <select id="estado">
+                  <option>🟢 En Trámite</option>
+                  <option>🟡 Suspendido / Espera</option>
+                  <option>🔴 Cerrado / Archivado</option>
+                  <option>📑 En Estudio / Análisis</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label>Estrategia y Notas del Caso</label>
+              <textarea id="notas" rows="6" placeholder="Resumen de la última vista, acuerdos pendientes..."></textarea>
+            </div>
+            <div class="actions" style="margin-top:15px">
+              <button id="btnGuardar">💾 Actualizar Expediente</button>
+              <button class="danger" id="btnEliminar">🗑️ Archivar/Eliminar</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+<script>
+// ================= BASE DE DATOS =================
+const DB_NAME = 'crm_legal_pro_v2';
+const DB_VERSION = 1;
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      const emp = db.createObjectStore('expedientes', { keyPath: 'codigo' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function allExpedientes() {
+  return new Promise((resolve) => {
+    const t = db.transaction(['expedientes'], 'readonly');
+    const r = t.objectStore('expedientes').getAll();
+    r.onsuccess = () => resolve(r.result || []);
+  });
+}
+
+async function saveExpediente(obj) {
+  const t = db.transaction(['expedientes'], 'readwrite');
+  t.objectStore('expedientes').put(obj);
+  return new Promise(res => t.oncomplete = res);
+}
+
+// ================= LÓGICA TIMER =================
+let timerInterval;
+let secondsSession = 0;
+let timerActive = false;
+
+function formatHMS(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sc = s % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sc).padStart(2, '0')}`;
+}
+
+function formatHMShort(s) {
+  if(!s) return "0h 0m";
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  return `${h}h ${m}m`;
+}
+
+function updateTimerDisplay() {
+  document.getElementById('timerDisplay').textContent = formatHMS(secondsSession);
+}
+
+function startTimer() {
+  if(!expedienteActual) { toast('Selecciona un expediente para cronometrar', 'error'); return; }
+  timerActive = true;
+  document.getElementById('btnStartTimer').classList.add('hidden');
+  document.getElementById('btnPauseTimer').classList.remove('hidden');
+  document.getElementById('btnStopTimer').classList.remove('hidden');
+  timerInterval = setInterval(() => {
+    secondsSession++;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function pauseTimer() {
+  timerActive = false;
+  clearInterval(timerInterval);
+  document.getElementById('btnStartTimer').classList.remove('hidden');
+  document.getElementById('btnPauseTimer').classList.add('hidden');
+}
+
+async function stopAndSave() {
+  if(!expedienteActual) return;
+  pauseTimer();
+  expedienteActual.total_segundos = (expedienteActual.total_segundos || 0) + secondsSession;
+  await saveExpediente(expedienteActual);
+  toast(`Sesión de ${formatHMS(secondsSession)} guardada`, 'success');
+  secondsSession = 0;
+  updateTimerDisplay();
+  document.getElementById('btnStopTimer').classList.add('hidden');
+  renderExpediente(expedienteActual);
+  cargarLista();
+}
+
+// ================= UI & CRUD =================
+let expedienteActual = null;
+
+function toast(msg, type='info'){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.display='block';
+  el.style.background = type==='error'? '#7f1d1d' : type==='success'? '#065f46' : '#111827';
+  setTimeout(()=> el.style.display='none', 3000);
+}
+
+async function cargarLista() {
+  const list = await allExpedientes();
+  const tbody = document.getElementById('empresaTable');
+  tbody.innerHTML = '';
+  
+  list.forEach(e => {
+    const tr = document.createElement('tr');
+    tr.dataset.code = e.codigo;
+    if(expedienteActual && e.codigo === expedienteActual.codigo) tr.classList.add('row-selected');
+    tr.innerHTML = `
+      <td><b>${e.codigo}</b></td>
+      <td>${e.empresa}</td>
+      <td>${e.estado}</td>
+      <td><span class="chip">${formatHMShort(e.total_segundos)}</span></td>
+    `;
+    tr.onclick = () => renderExpediente(e);
+    tbody.appendChild(tr);
+  });
+  
+  // Chips resumen
+  const chips = document.getElementById('summaryChips');
+  chips.innerHTML = `<span class="chip">${list.length} Casos</span>`;
+  const tram = list.filter(x => x.estado.includes('Trámite')).length;
+  if(tram > 0) chips.innerHTML += `<span class="chip success">${tram} en Trámite</span>`;
+}
+
+function renderExpediente(e) {
+  if(timerActive) { if(!confirm("Hay un cronómetro activo. Se perderá el tiempo de esta sesión si cambias de ficha sin guardar. ¿Continuar?")) return; pauseTimer(); secondsSession=0; updateTimerDisplay(); }
+  
+  expedienteActual = e;
+  document.querySelectorAll('#empresaTable tr').forEach(r => r.classList.remove('row-selected'));
+  const row = document.querySelector(`tr[data-code="${e.codigo}"]`);
+  if(row) row.classList.add('row-selected');
+
+  document.getElementById('codigo').value = e.codigo;
+  document.getElementById('empresa').value = e.empresa;
+  document.getElementById('contacto').value = e.contacto;
+  document.getElementById('telefono').value = e.telefono;
+  document.getElementById('email').value = e.email;
+  document.getElementById('sector').value = e.sector;
+  document.getElementById('estado').value = e.estado;
+  document.getElementById('notas').value = e.notas;
+
+  document.getElementById('valTotalAcumulado').textContent = formatHMShort(e.total_segundos);
+  document.getElementById('totalTimeContainer').classList.remove('hidden');
+}
+
+async function guardarActual() {
+  const nom = document.getElementById('empresa').value;
+  if(!nom) { toast('El nombre del cliente es vital','error'); return; }
+  
+  const data = {
+    codigo: document.getElementById('codigo').value || 'LEG-' + Math.random().toString(36).substr(2, 5).toUpperCase(),
+    empresa: nom,
+    contacto: document.getElementById('contacto').value,
+    telefono: document.getElementById('telefono').value,
+    email: document.getElementById('email').value,
+    sector: document.getElementById('sector').value,
+    estado: document.getElementById('estado').value,
+    notas: document.getElementById('notas').value,
+    total_segundos: expedienteActual ? expedienteActual.total_segundos : 0
+  };
+  
+  await saveExpediente(data);
+  expedienteActual = data;
+  toast('Expediente actualizado correctamente', 'success');
+  cargarLista();
+}
+
+async function eliminarActual() {
+  if(!expedienteActual) return;
+  if(!confirm(`¿Seguro que deseas archivar/eliminar el expediente ${expedienteActual.codigo}?`)) return;
+  const t = db.transaction(['expedientes'], 'readwrite');
+  t.objectStore('expedientes').delete(expedienteActual.codigo);
+  await new Promise(r => t.oncomplete = r);
+  expedienteActual = null;
+  resetForm();
+  cargarLista();
+  toast('Expediente eliminado');
+}
+
+function resetForm() {
+  document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+  document.getElementById('totalTimeContainer').classList.add('hidden');
+}
+
+// ================= DATA DEMO (Multinacionales) =================
+async function cargarDemos() {
+  const demos = [
+    { codigo: 'LEG-GOOG001', empresa: 'Google Spain S.L.', contacto: 'Larry Page (Legal Dept)', telefono: '+34 912 345 678', email: 'legal@google.com', sector: '⚖️ Propiedad Intelectual', estado: '🟢 En Trámite', total_segundos: 45200, notas: 'Litigio por derecho al olvido. Revisión de cookies.' },
+    { codigo: 'LEG-AMZN002', empresa: 'Amazon EU Sarl', contacto: 'Jeff Bezos (In-house)', telefono: '+34 910 001 002', email: 'compliance@amazon.es', sector: '⚖️ Derecho Mercantil', estado: '🟢 En Trámite', total_segundos: 124000, notas: 'Contratación logística HUB Madrid. Revisión de cláusulas suelo en naves.' },
+    { codigo: 'LEG-APPL003', empresa: 'Apple Marketing Iberia', contacto: 'Tim Cook (Counsel)', telefono: '+34 931 112 233', email: 'ip-legal@apple.com', sector: '⚖️ Propiedad Intelectual', estado: '📑 En Estudio / Análisis', total_segundos: 1500, notas: 'Registro de nuevas patentes de diseño en EUIPO.' },
+    { codigo: 'LEG-TSLA004', empresa: 'Tesla Motors Spain', contacto: 'Elon Musk (Head Counsel)', telefono: '+34 600 123 456', email: 'legal-es@tesla.com', sector: '⚖️ Derecho Administrativo', estado: '🟢 En Trámite', total_segundos: 89000, notas: 'Permisos de apertura Superchargers en Valencia.' },
+    { codigo: 'LEG-MSFT005', empresa: 'Microsoft Ibérica', contacto: 'Satya Nadella (Partner)', telefono: '+34 915 556 677', email: 'privacy@microsoft.com', sector: '⚖️ Propiedad Intelectual', estado: '🔴 Cerrado / Archivado', total_segundos: 230000, notas: 'Caso cerrado satisfactoriamente sobre monopolio servicios nube.' },
+    { codigo: 'LEG-META006', empresa: 'Meta Platforms (Facebook)', contacto: 'Mark Zuckerberg (Legal)', telefono: '+34 911 223 344', email: 'data-protection@meta.com', sector: '⚖️ Derecho Penal', estado: '🟡 Suspendido / Espera', total_segundos: 1200, notas: 'Denuncia por suplantación de identidad masiva. Pendiente de resolución judicial.' },
+    { codigo: 'LEG-VIGO007', empresa: 'Inditex S.A. (Zara)', contacto: 'Marta Ortega (Dpto Jurídico)', telefono: '+34 981 123 456', email: 'legal@inditex.com', sector: '⚖️ Derecho Laboral', estado: '🟢 En Trámite', total_segundos: 56700, notas: 'Negociación convenio colectivo centros logísticos Arteixo.' },
+    { codigo: 'LEG-SANT008', empresa: 'Banco Santander', contacto: 'Ana Botín (Secretaría)', telefono: '+34 912 888 777', email: 'procesal@santander.com', sector: '⚖️ Derecho Mercantil', estado: '🟢 En Trámite', total_segundos: 340000, notas: 'Fusiones y adquisiciones sector bancario LATAM.' },
+    { codigo: 'LEG-NFLX009', empresa: 'Netflix Services Spain', contacto: 'Reed Hastings (Counsel)', telefono: '+34 910 999 000', email: 'legal-emea@netflix.com', sector: '⚖️ Derecho Civil', estado: '📑 En Estudio / Análisis', total_segundos: 0, notas: 'Revisión términos y condiciones para cuentas compartidas.' },
+    { codigo: 'LEG-COKE010', empresa: 'Coca-Cola Europacific', contacto: 'James Quincey (Legal)', telefono: '+34 913 444 555', email: 'legal-es@coke.com', sector: '⚖️ Derecho Administrativo', estado: '🔴 Cerrado / Archivado', total_segundos: 15600, notas: 'Expediente sancionador medioambiental resuelto sin multa.' }
+  ];
+
+  for(const d of demos) {
+    await saveExpediente(d);
+  }
+  
+  toast('10 Expedientes de Multinacionales cargados', 'success');
+  document.getElementById('btnDemo').style.display = 'none';
+  cargarLista();
+}
+
+// ================= INIT =================
+window.onload = async () => {
+  db = await openDB();
+  cargarLista();
+  
+  document.getElementById('btnNueva').onclick = () => { expedienteActual = null; resetForm(); };
+  document.getElementById('btnDemo').onclick = cargarDemos;
+  document.getElementById('btnGuardar').onclick = guardarActual;
+  document.getElementById('btnEliminar').onclick = eliminarActual;
+  
+  document.getElementById('btnStartTimer').onclick = startTimer;
+  document.getElementById('btnPauseTimer').onclick = pauseTimer;
+  document.getElementById('btnStopTimer').onclick = stopAndSave;
+
+  document.getElementById('btnBuscar').onclick = cargarLista;
+  document.getElementById('btnLimpiar').onclick = () => { document.getElementById('searchInput').value = ''; cargarLista(); };
+
+  // Enter para buscar
+  document.getElementById('searchInput').onkeypress = (e) => { if(e.key === 'Enter') cargarLista(); };
+};
+</script>
+</body>
+</html>
