@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAC - Recogida de Datos Acústicos</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #27ae60;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            margin-left: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .app-description {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .app-description h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .app-description p {
+            margin-bottom: 1rem;
+        }
+        
+        .data-collection-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .data-collection-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .measurement-form, .measurements-list {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .measurement-form h3, .measurements-list h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-save {
+            background-color: var(--success-color);
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn-save:hover {
+            background-color: #219653;
+        }
+        
+        .btn-delete {
+            background-color: var(--accent-color);
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+        
+        .measurement-item {
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            background-color: #f9f9f9;
+        }
+        
+        .measurement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .measurement-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .measurement-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item {
+            margin-bottom: 0.3rem;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        
+        .export-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .current-location {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        
+        .location-icon {
+            margin-right: 0.5rem;
+        }
+        
+        .sensor-data {
+            background-color: #e8f4fc;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        
+        .sensor-data h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .sensor-values {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .sensor-value {
+            text-align: center;
+            padding: 0.5rem;
+            background-color: white;
+            border-radius: 4px;
+        }
+        
+        .value-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .value-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <h1>AAC Centro de Acústica</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="https://www.aacacustica.com" target="_blank">Sitio Web</a></li>
+                    <li><a href="#">Proyectos</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="app-description">
+            <h2>Aplicación de Recogida de Datos Acústicos</h2>
+            <p>Esta aplicación permite registrar mediciones acústicas en campo de forma sistemática. Capture datos de nivel sonoro, frecuencia, ubicación y condiciones ambientales.</p>
+            <p>Los datos se almacenan localmente y pueden exportarse para su posterior análisis.</p>
+        </div>
+
+        <div class="data-collection-container">
+            <div class="measurement-form">
+                <h3>Nueva Medición Acústica</h3>
+                
+                <form id="measurement-form">
+                    <div class="form-group">
+                        <label for="project-name">Nombre del Proyecto</label>
+                        <input type="text" id="project-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Ubicación</label>
+                        <input type="text" id="location" required>
+                        <div class="current-location">
+                            <span class="location-icon">📍</span>
+                            <button type="button" id="get-location">Obtener ubicación actual</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="measurement-time">Fecha y Hora</label>
+                            <input type="datetime-local" id="measurement-time" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="measurement-duration">Duración (min)</label>
+                            <input type="number" id="measurement-duration" min="1" value="5" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sound-level">Nivel Sonoro (dB)</label>
+                            <input type="number" id="sound-level" step="0.1" min="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="frequency">Frecuencia (Hz)</label>
+                            <select id="frequency" required>
+                                <option value="">Seleccione frecuencia</option>
+                                <option value="125">125 Hz</option>
+                                <option value="250">250 Hz</option>
+                                <option value="500">500 Hz</option>
+                                <option value="1000">1000 Hz</option>
+                                <option value="2000">2000 Hz</option>
+                                <option value="4000">4000 Hz</option>
+                                <option value="8000">8000 Hz</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="measurement-type">Tipo de Medición</label>
+                        <select id="measurement-type" required>
+                            <option value="">Seleccione tipo</option>
+                            <option value="ambiental">Ambiental</option>
+                            <option value="ocupacional">Ocupacional</option>
+                            <option value="impacto">Impacto Acústico</option>
+                            <option value="emision">Emisión</option>
+                            <option value="inmisión">Inmisión</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weather-conditions">Condiciones Meteorológicas</label>
+                        <div class="form-row">
+                            <select id="weather">
+                                <option value="">Condición</option>
+                                <option value="soleado">Soleado</option>
+                                <option value="nublado">Nublado</option>
+                                <option value="lluvia">Lluvia</option>
+                                <option value="viento">Viento</option>
+                            </select>
+                            <input type="number" id="temperature" placeholder="Temperatura (°C)" step="0.1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="equipment">Equipo Utilizado</label>
+                        <input type="text" id="equipment" placeholder="Ej: Sonómetro Clase 1, Modelo XYZ">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Observaciones</label>
+                        <textarea id="notes" rows="3" placeholder="Notas adicionales sobre la medición..."></textarea>
+                    </div>
+                    
+                    <div class="sensor-data">
+                        <h4>Datos del Sensor (Simulación)</h4>
+                        <div class="sensor-values">
+                            <div class="sensor-value">
+                                <div class="value-number" id="current-db">--</div>
+                                <div class="value-label">dB Actual</div>
+                            </div>
+                            <div class="sensor-value">
+                                <div class="value-number" id="avg-db">--</div>
+                                <div class="value-label">Promedio</div>
+                            </div>
+                            <div class="sensor-value">
+                                <div class="value-number" id="max-db">--</div>
+                                <div class="value-label">Máximo</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn" id="simulate-sensor" style="margin-top: 0.5rem; width: 100%;">
+                            Simular Lectura del Sensor
+                        </button>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-save">
+                        <i>💾</i> Guardar Medición
+                    </button>
+                </form>
+            </div>
+            
+            <div class="measurements-list">
+                <h3>Mediciones Registradas</h3>
+                
+                <div id="measurements-container">
+                    <div class="empty-state" id="empty-state">
+                        <p>No hay mediciones registradas</p>
+                        <p>Comience agregando una nueva medición</p>
+                    </div>
+                </div>
+                
+                <div class="export-actions">
+                    <button class="btn" id="export-csv">
+                        <i>📊</i> Exportar CSV
+                    </button>
+                    <button class="btn" id="export-excel">
+                        <i>📋</i> Exportar Excel
+                    </button>
+                    <button class="btn" id="clear-data">
+                        <i>🗑️</i> Limpiar Datos
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>AAC Centro de Acústica S.L. - Estudios acústicos y luminotécnicos - Vitoria-Gasteiz</p>
+            <p><a href="https://www.aacacustica.com" style="color: white;">www.aacacustica.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar fecha y hora actual
+        document.getElementById('measurement-time').value = new Date().toISOString().slice(0, 16);
+        
+        // Obtener ubicación actual
+        document.getElementById('get-location').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    document.getElementById('location').value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+                }, function(error) {
+                    alert('No se pudo obtener la ubicación: ' + error.message);
+                });
+            } else {
+                alert('La geolocalización no es compatible con este navegador');
+            }
+        });
+        
+        // Simular datos del sensor
+        document.getElementById('simulate-sensor').addEventListener('click', function() {
+            const currentDb = (Math.random() * 30 + 40).toFixed(1);
+            const avgDb = (Math.random() * 25 + 45).toFixed(1);
+            const maxDb = (Math.random() * 10 + parseFloat(currentDb)).toFixed(1);
+            
+            document.getElementById('current-db').textContent = currentDb;
+            document.getElementById('avg-db').textContent = avgDb;
+            document.getElementById('max-db').textContent = maxDb;
+            
+            // Rellenar automáticamente el campo de nivel sonoro
+            document.getElementById('sound-level').value = currentDb;
+        });
+        
+        // Cargar mediciones guardadas
+        let measurements = JSON.parse(localStorage.getItem('acousticMeasurements')) || [];
+        
+        function renderMeasurements() {
+            const container = document.getElementById('measurements-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (measurements.length === 0) {
+                emptyState.style.display = 'block';
+                container.innerHTML = '';
+                container.appendChild(emptyState);
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            container.innerHTML = '';
+            
+            measurements.forEach((measurement, index) => {
+                const measurementElement = document.createElement('div');
+                measurementElement.className = 'measurement-item';
+                measurementElement.innerHTML = `
+                    <div class="measurement-header">
+                        <div class="measurement-title">${measurement.project}</div>
+                        <button class="btn btn-delete" data-index="${index}">Eliminar</button>
+                    </div>
+                    <div class="measurement-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Ubicación:</span> ${measurement.location}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Fecha:</span> ${new Date(measurement.datetime).toLocaleString()}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Nivel Sonoro:</span> ${measurement.soundLevel} dB
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Frecuencia:</span> ${measurement.frequency} Hz
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Tipo:</span> ${measurement.type}
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Duración:</span> ${measurement.duration} min
+                        </div>
+                    </div>
+                    ${measurement.notes ? `<div class="detail-item"><span class="detail-label">Notas:</span> ${measurement.notes}</div>` : ''}
+                `;
+                container.appendChild(measurementElement);
+            });
+            
+            // Añadir event listeners a los botones de eliminar
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    measurements.splice(index, 1);
+                    localStorage.setItem('acousticMeasurements', JSON.stringify(measurements));
+                    renderMeasurements();
+                });
+            });
+        }
+        
+        // Guardar nueva medición
+        document.getElementById('measurement-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newMeasurement = {
+                project: document.getElementById('project-name').value,
+                location: document.getElementById('location').value,
+                datetime: document.getElementById('measurement-time').value,
+                duration: document.getElementById('measurement-duration').value,
+                soundLevel: document.getElementById('sound-level').value,
+                frequency: document.getElementById('frequency').value,
+                type: document.getElementById('measurement-type').value,
+                weather: document.getElementById('weather').value,
+                temperature: document.getElementById('temperature').value,
+                equipment: document.getElementById('equipment').value,
+                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            measurements.push(newMeasurement);
+            localStorage.setItem('acousticMeasurements', JSON.stringify(measurements));
+            
+            renderMeasurements();
+            
+            // Resetear formulario
+            this.reset();
+            document.getElementById('measurement-time').value = new Date().toISOString().slice(0, 16);
+            document.getElementById('measurement-duration').value = 5;
+            
+            // Limpiar datos del sensor
+            document.getElementById('current-db').textContent = '--';
+            document.getElementById('avg-db').textContent = '--';
+            document.getElementById('max-db').textContent = '--';
+            
+            alert('Medición guardada correctamente');
+        });
+        
+        // Exportar datos
+        document.getElementById('export-csv').addEventListener('click', function() {
+            if (measurements.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            let csvContent = "Proyecto,Ubicación,Fecha,Duración (min),Nivel Sonoro (dB),Frecuencia (Hz),Tipo,Clima,Temperatura,Equipo,Observaciones\n";
+            
+            measurements.forEach(measurement => {
+                csvContent += `"${measurement.project}","${measurement.location}","${measurement.datetime}",${measurement.duration},${measurement.soundLevel},${measurement.frequency},${measurement.type},${measurement.weather},${measurement.temperature},"${measurement.equipment}","${measurement.notes}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `datos_acusticos_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+        
+        document.getElementById('export-excel').addEventListener('click', function() {
+            alert('En una aplicación real, aquí se generaría un archivo Excel. Por ahora use la exportación CSV.');
+        });
+        
+        // Limpiar datos
+        document.getElementById('clear-data').addEventListener('click', function() {
+            if (confirm('¿Está seguro de que desea eliminar todas las mediciones? Esta acción no se puede deshacer.')) {
+                measurements = [];
+                localStorage.removeItem('acousticMeasurements');
+                renderMeasurements();
+            }
+        });
+        
+        // Inicializar la visualización de mediciones
+        renderMeasurements();
+    </script>
+</body>
+</html>
