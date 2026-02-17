@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>CRM Profesionala · Enpresak eta Artxiboak</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #f3f6fc;
+            color: #1e293b;
+            line-height: 1.5;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Goiburu argia */
+        .header-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            border-radius: 2rem 2rem 1rem 1rem;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,20,50,0.06);
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(145deg, #003f88, #00509e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .laguntza-chip {
+            background: #e9edf2;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .laguntza-chip kbd {
+            background: #1e2b3a;
+            color: white;
+            border-radius: 8px;
+            padding: 0.2rem 0.7rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        /* bi zutabe */
+        .crm-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.5rem;
+            flex: 1;
+        }
+        @media (max-width: 800px) {
+            .crm-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* panel estiloa */
+        .panel {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(6px);
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem 1.2rem;
+            box-shadow: 0 20px 30px -10px rgba(0,30,60,0.15);
+            border: 1px solid #ffffff70;
+            transition: all 0.1s ease;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1.2rem;
+        }
+        h2 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+        .btn-ekintza, button {
+            background: #f0f4fe;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #003f88;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+        button.berdea {
+            background: #d0efd1;
+            color: #0a5e1f;
+        }
+        button.berdea:hover {
+            background: #b8e2ba;
+        }
+        button:hover {
+            background: #dee9fa;
+            border-color: #abc2e0;
+        }
+        button:active { scale: 0.97; }
+        input, select, textarea {
+            background: #f8fafd;
+            border: 1px solid #cbd5e1;
+            border-radius: 30px;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.95rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            transition: 0.15s;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #00509e;
+            box-shadow: 0 0 0 3px rgba(0,80,158,0.2);
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-left: 0.7rem;
+            color: #2c3e50;
+        }
+        .kode-automatikoa {
+            background: #eef2f7;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            border: 1px dashed #4b7bec;
+        }
+        /* txipak (chips) */
+        .chip-kontainerra {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .chip {
+            background: #e6f0ff;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #004080;
+            border: 1px solid #b9d3f0;
+        }
+        .chip.aktibo { background: #d8f0dc; color: #0f5c2b; border-color: #a0d8a8; }
+        .chip.itxaron { background: #fff1cf; color: #8e6100; border-color: #f7d69c; }
+        .chip.inaktibo { background: #ffe6e5; color: #ac2c2c; border-color: #fbbebe; }
+        /* enpresa zerrenda */
+        .enpresa-list {
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .enpresa-card {
+            background: #fbfdff;
+            border-radius: 22px;
+            padding: 1rem 1.3rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #dde7f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .enpresa-card.hautatua {
+            border-left: 8px solid #00509e;
+            background: #ebf3ff;
+            transform: scale(1.01);
+        }
+        .enpresa-info {
+            flex:1;
+        }
+        .enpresa-kodea {
+            font-family: monospace;
+            background: #dde5f0;
+            border-radius: 20px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        .btn-txiki {
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+            background: white;
+            border: 1px solid #c0d0e4;
+        }
+        .bilaketa-kutxa {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .bilaketa-kutxa i { position: absolute; left: 20px; top: 15px; opacity: 0.5; }
+        .bilaketa-kutxa input { padding-left: 45px; }
+        /* fitxategi zona */
+        .drop-zona {
+            border: 2px dashed #b3c7e3;
+            background: #f3f9ff;
+            border-radius: 40px;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin: 1rem 0;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .drop-zona.dragover {
+            background: #d5e6ff;
+            border-color: #00509e;
+        }
+        .artxibo-lista {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .artxibo-item {
+            background: #f1f6fd;
+            border-radius: 30px;
+            padding: 0.6rem 1rem;
+            margin: 0.4rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .artxibo-botoiak {
+            display: flex;
+            gap: 6px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background: #1e2f4a;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: 0.25s;
+            pointer-events: none;
+            z-index: 2000;
+            font-weight: 500;
+            max-width: 350px;
+        }
+        .toast.erakutsi { opacity: 1; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        .modal-edukia {
+            background: white;
+            border-radius: 40px;
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow: auto;
+        }
+        .modal-img, .modal-pdf {
+            max-width: 70vw;
+            max-height: 70vh;
+        }
+        .footer-azkarra {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="header-toolbar">
+    <span class="logo">📋 CRM · Enpresa Kudeatzailea</span>
+    <div class="laguntza-chip">
+        <span>🔍 Bilaketa azkarra</span>
+        <kbd>Ctrl+K</kbd> <span style="margin:0 4px;">edo</span> <kbd>⌘+K</kbd>
+    </div>
+</div>
+
+<!-- Toast jakinarazpenak -->
+<div id="toast" class="toast">Mezua</div>
+
+<!-- Modal aurrebista -->
+<div id="modalAurrebista" class="modal" onclick="this.style.display='none'">
+    <div class="modal-edukia" onclick="event.stopPropagation()">
+        <div id="modalContent" style="text-align:center;"></div>
+        <button class="btn-txiki" style="margin-top:1rem;" onclick="modalAurrebista.style.display='none'">Itxi</button>
+    </div>
+</div>
+
+<div class="crm-layout">
+    <!-- EZKER PANELA: enpresa zerrenda + txipak + bilaketa -->
+    <div class="panel">
+        <div class="panel-header">
+            <h2>📇 Enpresak</h2>
+            <button class="berdea" id="enpresaBerriaBtn">➕ Berria</button>
+        </div>
+        <!-- Bilaketa debounce-rekin -->
+        <div class="bilaketa-kutxa">
+            <input type="text" id="bilaketaInput" placeholder="Bilatu enpresa, kontaktu, email..." autocomplete="off">
+        </div>
+        <!-- Txipak / laburpena -->
+        <div class="chip-kontainerra" id="chipKontainerra">
+            <span class="chip" id="chipTotal">Guztiak: 0</span>
+            <span class="chip aktibo" id="chipAktibo">Aktibo: 0</span>
+            <span class="chip itxaron" id="chipItxaron">Itxaron: 0</span>
+            <span class="chip inaktibo" id="chipInaktibo">Inaktibo: 0</span>
+        </div>
+        <!-- Enpresa zerrenda -->
+        <div class="enpresa-list" id="enpresaLista"></div>
+        <!-- esportazioa / inportazioa -->
+        <div class="footer-azkarra">
+            <button id="exportatuBtn" class="btn-txiki">📤 Esportatu JSON</button>
+            <button id="inportatuBtn" class="btn-txiki">📥 Inportatu</button>
+            <input type="file" id="inportatuFitx" accept="application/json" style="display:none;">
+        </div>
+    </div>
+
+    <!-- ESKUIN PANELA: xehetasunak eta artxiboak -->
+    <div class="panel" id="xehetasunPanel">
+        <h2 style="margin-bottom:0.5rem;">📄 Xehetasunak</h2>
+        <form id="empresaForm">
+            <input type="hidden" id="empresaId" value="">
+            <label>Kodea (automatikoa)</label>
+            <div class="kode-automatikoa" id="kodeErakutsi">-</div>
+            <label>Enpresa izena *</label>
+            <input type="text" id="izena" placeholder="Adibidez: Euskaltek" required>
+            <label>Kontaktua</label>
+            <input type="text" id="kontaktua" placeholder="Izen abizena">
+            <label>Telefonoa *</label>
+            <input type="tel" id="telefonoa" placeholder="+34 123 456 789" required>
+            <label>Email *</label>
+            <input type="email" id="email" placeholder="helbidea@enpresa.eus" required>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <div style="flex:1;"><label>Sektorea</label><select id="sektorea"><option>Teknologia</option><option>Industria</option><option>Zerbitzuak</option><option>Osasuna</option></select></div>
+                <div style="flex:1;"><label>Egoera</label><select id="egoera"><option value="aktibo">Aktibo</option><option value="itxaron">Itxaron</option><option value="inaktibo">Inaktibo</option></select></div>
+            </div>
+            <label>Oharrak / notak</label>
+            <textarea id="oharrak" rows="2" placeholder="Oharrak..."></textarea>
+            <div style="display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap;">
+                <button type="submit" class="berdea" id="gordeBtn">💾 Gorde enpresa</button>
+                <button type="button" id="ezabatuBtn" class="btn-txiki" style="background:#fee2e2; color:#a12;">🗑️ Ezabatu</button>
+            </div>
+        </form>
+
+        <hr style="margin: 1.5rem 0; border: 1px solid #e2eaf5;">
+
+        <!-- Artxiboak kudeaketa -->
+        <h3>📎 Artxiboak</h3>
+        <div id="artxiboDropZona" class="drop-zona">
+            <p>🗂️ Arrastatu eta askatu fitxategiak hemen</p>
+            <p>edo <button type="button" id="artxibo HautatuBotoia" class="btn-txiki" style="pointer-events: none;" onclick="document.getElementById('artxiboInput').click()">hautatu</button></p>
+            <input type="file" id="artxiboInput" multiple style="display:none;">
+        </div>
+        <div style="display:flex; gap:6px; margin:10px 0;">
+            <button id="jaitsiDenakBtn" class="btn-txiki">⬇️ Jaitsi denak (ZIP)</button>
+        </div>
+        <ul class="artxibo-lista" id="artxiboLista"></ul>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----------------------- EUSKARA OSOKO CRM -------------------------
+        const DB_NAME = 'CRM_euskeraDB';
+        const DB_VERS = 2;
+        let db;
+        let hautatutakoEnpresaId = null;
+        let bilaketaTimeout;
+        let filtroa = '';
+
+        // Toast agerpena
+        function toastMezua(mezua, mota='info') {
+            const t = document.getElementById('toast');
+            t.textContent = mezua;
+            t.classList.add('erakutsi');
+            setTimeout(() => t.classList.remove('erakutsi'), 3500);
+        }
+
+        // IndexedDB ireki
+        function irekiDB() {
+            return new Promise((bai, ez) => {
+                const req = indexedDB.open(DB_NAME, DB_VERS);
+                req.onerror = () => ez(req.error);
+                req.onsuccess = (e) => { db = e.target.result; bai(db); };
+                req.onupgradeneeded = (e) => {
+                    const dbTemp = e.target.result;
+                    if (!dbTemp.objectStoreNames.contains('empresas')) {
+                        const store = dbTemp.createObjectStore('empresas', { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('kodea', 'kodea', { unique: true });
+                        store.createIndex('izena', 'izena', { unique: false });
+                    }
+                    if (!dbTemp.objectStoreNames.contains('archivos')) {
+                        const store2 = dbTemp.createObjectStore('archivos', { keyPath: 'id', autoIncrement: true });
+                        store2.createIndex('enpresaId', 'enpresaId', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // datuak kargatu hasieran
+        irekiDB().then(() => {
+            kargatuEnpresak();
+            kargatuChipak();
+        }).catch(e => toastMezua('DB errorea: ' + e));
+
+        // --- Enpresa zerbitzuak ---
+        async function getEmpresak() {
+            return new Promise((bai) => {
+                const tx = db.transaction('empresas', 'readonly');
+                const store = tx.objectStore('empresas');
+                const req = store.getAll();
+                req.onsuccess = () => bai(req.result || []);
+            });
+        }
+
+        async function gordeEnpresa(emp) {
+            return new Promise((bai, ez) => {
+                const tx = db.transaction('empresas', 'readwrite');
+                const store = tx.objectStore('empresas');
+                if (!emp.id) delete emp.id;
+                const req = emp.id ? store.put(emp) : store.add(emp);
+                req.onsuccess = () => bai(req.result);
+                req.onerror = () => ez(req.error);
+            });
+        }
+
+        async function ezabatuEnpresa(id) {
+            return new Promise((bai) => {
+                const tx = db.transaction(['empresas', 'archivos'], 'readwrite');
+                tx.objectStore('empresas').delete(id);
+                const archivoIdx = tx.objectStore('archivos').index('enpresaId');
+                archivoIdx.openCursor(IDBKeyRange.only(id)).onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) { cursor.delete(); cursor.continue(); }
+                };
+                tx.oncomplete = bai;
+            });
+        }
+
+        // Kode automatikoa sortu: 3 letra enpresa + 3 letra kontaktu + zenbaki korrelatiboa
+        async function sortuKodeUnikoa(izena, kontaktua) {
+            const enpLetrak = (izena ? izena.replace(/[^a-zA-Z]/g, '').slice(0,3) : 'ENP').padEnd(3,'X').toUpperCase();
+            const konLetrak = (kontaktua ? kontaktua.replace(/[^a-zA-Z]/g, '').slice(0,3) : 'KON').padEnd(3,'Y').toUpperCase();
+            const guztiak = await getEmpresak();
+            const maxZbk = guztiak.reduce((acc, e) => {
+                if (e.kodea && e.kodea.startsWith(enpLetrak+konLetrak)) {
+                    const z = parseInt(e.kodea.slice(-3)) || 0;
+                    return Math.max(acc, z);
+                } return acc;
+            }, 0);
+            return enpLetrak + konLetrak + (maxZbk+1).toString().padStart(3,'0');
+        }
+
+        // inprimatu enpresa zerrenda
+        async function kargatuEnpresak() {
+            const enpresak = await getEmpresak();
+            const filtro = filtroa.toLowerCase();
+            const iragazitakoak = enpresak.filter(e => 
+                e.izena?.toLowerCase().includes(filtro) ||
+                e.kontaktua?.toLowerCase().includes(filtro) ||
+                e.email?.toLowerCase().includes(filtro) ||
+                e.telefonoa?.includes(filtro) ||
+                e.oharrak?.toLowerCase().includes(filtro)
+            );
+            iragazitakoak.sort((a,b) => a.izena?.localeCompare(b.izena));
+            const container = document.getElementById('enpresaLista');
+            container.innerHTML = '';
+            for (let e of iragazitakoak) {
+                const card = document.createElement('div');
+                card.className = `enpresa-card ${hautatutakoEnpresaId === e.id ? 'hautatua' : ''}`;
+                card.innerHTML = `<div class="enpresa-info"><strong>${e.izena || 'izengabe'}</strong> <span class="enpresa-kodea">${e.kodea || '---'}</span><br><small>${e.kontaktua || ''} · ${e.email || ''}</small></div>
+                    <div><button class="btn-txiki hautatuBtn" data-id="${e.id}">👁️ ikusi</button></div>`;
+                container.appendChild(card);
+                card.querySelector('.hautatuBtn').addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    hautatuEnpresa(e.id);
+                });
+            }
+        }
+
+        function hautatuEnpresa(id) {
+            hautatutakoEnpresaId = id;
+            kargatuEnpresak(); // berriro margotu
+            beteXehetasunak(id);
+            kargatuArtxiboak(id);
+        }
+
+        async function beteXehetasunak(id) {
+            if (!id) return;
+            const emp = await getEmpresaById(id);
+            if (!emp) return;
+            document.getElementById('empresaId').value = emp.id || '';
+            document.getElementById('kodeErakutsi').innerText = emp.kodea || 'automatikoa';
+            document.getElementById('izena').value = emp.izena || '';
+            document.getElementById('kontaktua').value = emp.kontaktua || '';
+            document.getElementById('telefonoa').value = emp.telefonoa || '';
+            document.getElementById('email').value = emp.email || '';
+            document.getElementById('sektorea').value = emp.sektorea || 'Teknologia';
+            document.getElementById('egoera').value = emp.egoera || 'aktibo';
+            document.getElementById('oharrak').value = emp.oharrak || '';
+        }
+
+        async function getEmpresaById(id) {
+            return new Promise(bai => {
+                const tx = db.transaction('empresas', 'readonly');
+                tx.objectStore('empresas').get(id).onsuccess = e => bai(e.target.result);
+            });
+        }
+
+        // artxiboak kargatu
+        async function kargatuArtxiboak(enpresaId) {
+            if (!enpresaId) return;
+            const tx = db.transaction('archivos', 'readonly');
+            const index = tx.objectStore('archivos').index('enpresaId');
+            index.getAll(IDBKeyRange.only(enpresaId)).onsuccess = (e) => {
+                const artxiboak = e.target.result;
+                const lista = document.getElementById('artxiboLista');
+                lista.innerHTML = '';
+                artxiboak.forEach(a => {
+                    const li = document.createElement('li');
+                    li.className = 'artxibo-item';
+                    li.innerHTML = `<span><strong>${a.izena}</strong> (${(a.tamaina/1024).toFixed(1)} KB) · ${new Date(a.data).toLocaleDateString()}</span>
+                        <div class="artxibo-botoiak">
+                            <button class="btn-txiki aurrebistaBtn" data-id="${a.id}">👁️</button>
+                            <button class="btn-txiki jaitsiBtn" data-id="${a.id}">⬇️</button>
+                            <button class="btn-txiki ezabatuArtxiboBtn" data-id="${a.id}">🗑️</button>
+                        </div>`;
+                    lista.appendChild(li);
+                    li.querySelector('.aurrebistaBtn').onclick = () => aurrebistaArtxiboa(a);
+                    li.querySelector('.jaitsiBtn').onclick = () => jaitsiArtxiboa(a);
+                    li.querySelector('.ezabatuArtxiboBtn').onclick = () => ezabatuArtxiboa(a.id, enpresaId);
+                });
+            };
+        }
+
+        // artxiboak: gorde Blob
+        function gordeArtxiboa(enpresaId, fitx) {
+            return new Promise(bai => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const blob = new Blob([e.target.result], {type: fitx.type});
+                    const artx = {
+                        enpresaId: enpresaId,
+                        izena: fitx.name,
+                        mota: fitx.type,
+                        tamaina: fitx.size,
+                        data: Date.now(),
+                        blob: blob
+                    };
+                    const tx = db.transaction('archivos', 'readwrite');
+                    tx.objectStore('archivos').add(artx).onsuccess = () => {
+                        kargatuArtxiboak(enpresaId);
+                        bai();
+                    };
+                };
+                reader.readAsArrayBuffer(fitx);
+            });
+        }
+
+        function ezabatuArtxiboa(id, enpresaId) {
+            const tx = db.transaction('archivos', 'readwrite');
+            tx.objectStore('archivos').delete(id);
+            tx.oncomplete = () => kargatuArtxiboak(enpresaId);
+            toastMezua('Artxiboa ezabatuta');
+        }
+
+        function jaitsiArtxiboa(artx) {
+            const url = URL.createObjectURL(artx.blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = artx.izena; a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function aurrebistaArtxiboa(artx) {
+            const mota = artx.mota;
+            const modal = document.getElementById('modalAurrebista');
+            const edukia = document.getElementById('modalContent');
+            if (mota.startsWith('image/')) {
+                const url = URL.createObjectURL(artx.blob);
+                edukia.innerHTML = `<img src="${url}" class="modal-img" alt="${artx.izena}">`;
+            } else if (mota === 'application/pdf') {
+                const url = URL.createObjectURL(artx.blob);
+                edukia.innerHTML = `<iframe src="${url}" class="modal-pdf" width="600" height="500"></iframe>`;
+            } else {
+                edukia.innerHTML = `<p>Ez dago aurrebistarik mota honentzat: ${artx.mota}</p>`;
+            }
+            modal.style.display = 'flex';
+        }
+
+        // TXIPAK eguneratu
+        async function kargatuChipak() {
+            const enpresak = await getEmpresak();
+            document.getElementById('chipTotal').innerText = `Guztiak: ${enpresak.length}`;
+            const akt = enpresak.filter(e => e.egoera === 'aktibo').length;
+            const itx = enpresak.filter(e => e.egoera === 'itxaron').length;
+            const ina = enpresak.filter(e => e.egoera === 'inaktibo').length;
+            document.getElementById('chipAktibo').innerText = `Aktibo: ${akt}`;
+            document.getElementById('chipItxaron').innerText = `Itxaron: ${itx}`;
+            document.getElementById('chipInaktibo').innerText = `Inaktibo: ${ina}`;
+        }
+
+        // ------------- Formularioa gorde -------------
+        document.getElementById('empresaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('empresaId').value;
+            const izena = document.getElementById('izena').value.trim();
+            if (!izena) return toastMezua('Izena beharrezkoa da');
+            const telefonoa = document.getElementById('telefonoa').value.trim();
+            if (!/^[+]?[\d\s\-+]{6,}$/.test(telefonoa)) return toastMezua('Telefonoa baliogabea');
+            const email = document.getElementById('email').value.trim();
+            if (!/^\S+@\S+\.\S+$/.test(email)) return toastMezua('Email baliogabea');
+
+            let kodea = document.getElementById('kodeErakutsi').innerText;
+            if (!id || kodea === '-') { // berria bada
+                kodea = await sortuKodeUnikoa(izena, document.getElementById('kontaktua').value);
+            }
+            const enpresa = {
+                izena, kodea,
+                kontaktua: document.getElementById('kontaktua').value,
+                telefonoa, email,
+                sektorea: document.getElementById('sektorea').value,
+                egoera: document.getElementById('egoera').value,
+                oharrak: document.getElementById('oharrak').value,
+                createdAt: Date.now()
+            };
+            if (id) enpresa.id = Number(id);
+            const emaitzaId = await gordeEnpresa(enpresa);
+            if (!id) hautatutakoEnpresaId = emaitzaId;
+            kargatuEnpresak(); kargatuChipak();
+            if (!id) hautatuEnpresa(emaitzaId);
+            else beteXehetasunak(id);
+            toastMezua('Enpresa gordeta!');
+        });
+
+        document.getElementById('ezabatuBtn').addEventListener('click', async () => {
+            if (!hautatutakoEnpresaId) return toastMezua('Ez da enpresa hautatu');
+            if (!confirm('Ziur enpresa eta bere artxibo guztiak ezabatu?')) return;
+            await ezabatuEnpresa(hautatutakoEnpresaId);
+            hautatutakoEnpresaId = null;
+            document.getElementById('empresaForm').reset();
+            document.getElementById('kodeErakutsi').innerText = '-';
+            document.getElementById('artxiboLista').innerHTML = '';
+            kargatuEnpresak(); kargatuChipak();
+            toastMezua('Enpresa ezabatuta');
+        });
+
+        document.getElementById('enpresaBerriaBtn').addEventListener('click', () => {
+            hautatutakoEnpresaId = null;
+            document.getElementById('empresaForm').reset();
+            document.getElementById('empresaId').value = '';
+            document.getElementById('kodeErakutsi').innerText = '-';
+            document.getElementById('artxiboLista').innerHTML = '';
+        });
+
+        // Bilaketa debounce
+        document.getElementById('bilaketaInput').addEventListener('input', (e) => {
+            clearTimeout(bilaketaTimeout);
+            bilaketaTimeout = setTimeout(() => {
+                filtroa = e.target.value;
+                kargatuEnpresak();
+            }, 350);
+        });
+
+        // Drag & drop
+        const dropZona = document.getElementById('artxiboDropZona');
+        dropZona.addEventListener('dragover', (e) => { e.preventDefault(); dropZona.classList.add('dragover'); });
+        dropZona.addEventListener('dragleave', () => dropZona.classList.remove('dragover'));
+        dropZona.addEventListener('drop', (e) => {
+            e.preventDefault(); dropZona.classList.remove('dragover');
+            if (!hautatutakoEnpresaId) return toastMezua('Lehenik enpresa hautatu');
+            const files = Array.from(e.dataTransfer.files);
+            files.forEach(f => gordeArtxiboa(hautatutakoEnpresaId, f));
+        });
+        document.getElementById('artxiboInput').addEventListener('change', (e) => {
+            if (!hautatutakoEnpresaId) return toastMezua('Lehenik enpresa hautatu');
+            Array.from(e.target.files).forEach(f => gordeArtxiboa(hautatutakoEnpresaId, f));
+        });
+        dropZona.addEventListener('click', () => document.getElementById('artxiboInput').click());
+
+        // jaitsi denak ZIP sinple (JSZip gabe, banan jaitsi)
+        document.getElementById('jaitsiDenakBtn').addEventListener('click', async () => {
+            if (!hautatutakoEnpresaId) return toastMezua('Hautatu enpresa bat');
+            const tx = db.transaction('archivos', 'readonly');
+            const index = tx.objectStore('archivos').index('enpresaId');
+            index.getAll(IDBKeyRange.only(hautatutakoEnpresaId)).onsuccess = e => {
+                const artxiboak = e.target.result;
+                for (let a of artxiboak) jaitsiArtxiboa(a);
+            };
+        });
+
+        // Ctrl+K bilaketa fokua
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('bilaketaInput').focus();
+            }
+        });
+
+        // JSON esportazioa (metadatuak + artxiboak gabe blob)
+        document.getElementById('exportatuBtn').addEventListener('click', async () => {
+            const enp = await getEmpresak();
+            const artx = await new Promise(bai => {
+                const tx = db.transaction('archivos', 'readonly');
+                tx.objectStore('archivos').getAll().onsuccess = e => bai(e.target.result.map(a => ({...a, blob: undefined})));
+            });
+            const json = JSON.stringify({empresak: enp, artxiboak: artx}, null, 2);
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([json], {type:'application/json'}));
+            a.download = 'crm_euskera_backup.json'; a.click();
+        });
+
+        document.getElementById('inportatuBtn').addEventListener('click', () => document.getElementById('inportatuFitx').click());
+        document.getElementById('inportatuFitx').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const text = await file.text();
+            try {
+                const data = JSON.parse(text);
+                if (data.empresak?.length) {
+                    for (let emp of data.empresak) await gordeEnpresa(emp);
+                }
+                // Artxiboak bloberik gabe saltatu egiten dira (simple)
+                toastMezua('Enpresak inportatuta (artxiboak gabe)');
+                kargatuEnpresak(); kargatuChipak();
+            } catch (er) { toastMezua('JSON baliogabea'); }
+            e.target.value = '';
+        });
+
+        // hasierako hutsa
+        window.kargatuEnpresak = kargatuEnpresak;
+        window.kargatuChipak = kargatuChipak;
+    })();
+</script>
+<!-- oharra: dena euskaraz, laguntza eta xehetasun guztiak -->
+</body>
+</html>
