@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zubiarte & Asociados | Abogados en Bilbao</title>
+    <style>
+        /* Estilos Generales */
+        :root {
+            --azul-primario: #1a2a6c;
+            --dorado-suave: #b89550;
+            --gris-claro: #f4f4f4;
+            --texto: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--texto);
+        }
+
+        header {
+            background: #fff;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--azul-primario);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: var(--texto);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--dorado-suave);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(26, 42, 108, 0.8), rgba(26, 42, 108, 0.8)), 
+                        url('https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&w=1350&q=80'); /* Imagen de Bilbao */
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 10px; }
+        .hero p { font-size: 1.2rem; max-width: 600px; }
+
+        /* Secciones */
+        section { padding: 4rem 10%; }
+        h2 { text-align: center; color: var(--azul-primario); margin-bottom: 2rem; }
+
+        .servicios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--gris-claro);
+            padding: 2rem;
+            border-radius: 5px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { color: var(--azul-primario); }
+
+        /* Contacto */
+        .contacto-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .info-contacto { flex: 1; min-width: 300px; }
+        form { flex: 1; min-width: 300px; display: flex; flex-direction: column; }
+
+        input, textarea {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background: var(--azul-primario);
+            color: white;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 4px;
+        }
+
+        button:hover { background: #121d4a; }
+
+        footer {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            header { flex-direction: column; }
+            nav { margin-top: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Zubiarte & Asociados</div>
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#servicios">Especialidades</a>
+            <a href="#nosotros">El Despacho</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+    </header>
+
+    <section id="inicio" class="hero">
+        <h1>Excelencia Jurídica en el corazón de Bilbao</h1>
+        <p>Compromiso, rigor y soluciones estratégicas para particulares y empresas desde hace más de 20 años.</p>
+    </section>
+
+    <section id="servicios">
+        <h2>Áreas de Especialización</h2>
+        <div class="servicios">
+            <div class="card">
+                <h3>Derecho Civil</h3>
+                <p>Contratos, herencias, reclamaciones de cantidad y derecho de familia.</p>
+            </div>
+            <div class="card">
+                <h3>Derecho Mercantil</h3>
+                <p>Asesoramiento a empresas, fusiones, adquisiciones y reestructuraciones.</p>
+            </div>
+            <div class="card">
+                <h3>Derecho Laboral</h3>
+                <p>Despidos, EREs, negociación colectiva y defensa ante el SMAC.</p>
+            </div>
+            <div class="card">
+                <h3>Derecho Administrativo</h3>
+                <p>Relaciones con la administración pública y recursos contenciosos.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="nosotros" style="background-color: var(--gris-claro);">
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <h2>Sobre Nosotros</h2>
+            <p>Ubicados frente al Museo Guggenheim, <strong>Zubiarte & Asociados</strong> nació con la vocación de ofrecer un servicio jurídico de alta calidad, cercano y adaptado a la realidad económica del País Vasco.</p>
+            <p>Nuestro equipo multidisciplinar combina la experiencia de socios veteranos con el dinamismo de nuevos talentos, garantizando una defensa integral de sus intereses.</p>
+        </div>
+    </section>
+
+    <section id="contacto">
+        <h2>Contacte con Nosotros</h2>
+        <div class="contacto-container">
+            <div class="info-contacto">
+                <h3>Datos de Contacto</h3>
+                <p><strong>Dirección:</strong> Alameda de Mazarredo, 45, 4º Derecha. 48009 Bilbao (Bizkaia)</p>
+                <p><strong>Teléfono:</strong> 944 123 456</p>
+                <p><strong>Email:</strong> info@zubiarteabogados.eus</p>
+                <p><strong>Horario:</strong> L-V: 09:00 - 19:00</p>
+            </div>
+            <form action="#">
+                <input type="text" placeholder="Nombre completo" required>
+                <input type="email" placeholder="Correo electrónico" required>
+                <textarea rows="5" placeholder="Cuéntenos su caso de forma breve..." required></textarea>
+                <button type="submit">Solicitar Consulta</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Zubiarte & Asociados. Todos los derechos reservados. | <a href="#" style="color: #aaa; text-decoration: none;">Aviso Legal</a></p>
+    </footer>
+
+</body>
+</html>

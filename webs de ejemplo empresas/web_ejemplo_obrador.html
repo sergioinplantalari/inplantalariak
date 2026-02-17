@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zituene - Pasta Artesana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --color-primary: #7d6b5d; /* Color trigo/tierra */
+            --color-accent: #a3b18a;  /* Verde oliva suave */
+            --bg-creme: #fdfaf5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-creme);
+            color: #333;
+            margin: 0;
+            padding-bottom: 70px; /* Espacio para el menú inferior */
+        }
+
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+            z-index: 1000;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #999;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: var(--color-primary);
+        }
+
+        .section {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            background: var(--color-accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800');
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Logo -->
+    <header class="p-4 flex justify-between items-center bg-white sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-[#7d6b5d] rounded-full flex items-center justify-center text-white">
+                <i class="fas fa-wheat-awn"></i>
+            </div>
+            <span class="font-bold text-xl tracking-tighter">ZITUENE</span>
+        </div>
+        <button onclick="window.location.href='https://zituene.eus/es/'" class="text-sm border border-[#7d6b5d] px-3 py-1 rounded-full text-[#7d6b5d]">
+            Tienda Online
+        </button>
+    </header>
+
+    <!-- SECCIÓN: INICIO (HOME) -->
+    <main id="home" class="section active">
+        <div class="hero-gradient rounded-2xl mb-6">
+            <div>
+                <h1 class="text-3xl mb-2">Pasta artesana de Errenteria</h1>
+                <p class="text-sm px-10">Obrador cooperativo de pasta fresca, seca y platos preparados.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="card p-4 flex flex-col items-center text-center bg-white">
+                <i class="fas fa-seedling text-3xl text-[#a3b18a] mb-2"></i>
+                <h3 class="font-bold">Ecológico</h3>
+                <p class="text-xs text-gray-500">Materia prima de calidad</p>
+            </div>
+            <div class="card p-4 flex flex-col items-center text-center bg-white">
+                <i class="fas fa-users text-3xl text-[#7d6b5d] mb-2"></i>
+                <h3 class="font-bold">Cooperativa</h3>
+                <p class="text-xs text-gray-500">Proyecto local y social</p>
+            </div>
+        </div>
+
+        <h2 class="text-xl font-bold mb-4 border-l-4 border-[#7d6b5d] pl-2">Nuestro Concepto</h2>
+        <p class="text-gray-600 leading-relaxed mb-6">
+            Zituene es mucho más que pasta. Trabajamos cereales locales como trigo, espelta y centeno para ofrecerte un producto vivo, artesanal y con toda su pureza.
+        </p>
+    </main>
+
+    <!-- SECCIÓN: PRODUCTOS -->
+    <main id="productos" class="section">
+        <h2 class="text-2xl font-bold mb-6">Nuestros Productos</h2>
+        
+        <!-- Categoría: Obrador -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">Obrador (Pasta)</h3>
+                <span class="badge">Artesano</span>
+            </div>
+            <div class="space-y-4">
+                <div class="card flex gap-4 p-3 items-center">
+                    <div class="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                         <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=200" alt="Pasta fresca" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Pasta Fresca y Seca</h4>
+                        <p class="text-xs text-gray-500">Trigo, espelta y centeno. Blancas o integrales.</p>
+                    </div>
+                </div>
+                <div class="card flex gap-4 p-3 items-center">
+                    <div class="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                         <img src="https://images.unsplash.com/photo-1473093226795-af9932fe5856?w=200" alt="Packs" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm">Packs Variados</h4>
+                        <p class="text-xs text-gray-500">Combinaciones ideales para regalo o degustación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categoría: Cocina -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">La Cocina</h3>
+                <span class="badge">Listo para comer</span>
+            </div>
+            <div class="card p-0 mb-4">
+                <div class="p-4">
+                    <h4 class="font-bold">Lasañas y Salsas</h4>
+                    <p class="text-sm text-gray-600 mb-3">Elaboramos semanalmente lasañas de carne y verduras (opción vegana disponible) y salsas artesanales.</p>
+                    <div class="flex gap-2">
+                        <span class="text-[10px] bg-red-50 text-red-700 px-2 py-1 rounded">Carne</span>
+                        <span class="text-[10px] bg-green-50 text-green-700 px-2 py-1 rounded">Verduras</span>
+                        <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded">Vegano</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Categoría: Tienda -->
+        <div class="mb-8">
+            <h3 class="text-lg font-bold mb-4">Productos de Caserío</h3>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="card p-3 text-center">
+                    <i class="fas fa-cheese text-[#7d6b5d] mb-1"></i>
+                    <p class="text-xs font-bold">Lácteos Larreta</p>
+                </div>
+                <div class="card p-3 text-center">
+                    <i class="fas fa-egg text-[#7d6b5d] mb-1"></i>
+                    <p class="text-xs font-bold">Quesos Behieko</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SECCIÓN: SERVICIOS -->
+    <main id="servicios" class="section">
+        <h2 class="text-2xl font-bold mb-6">Nuestros Servicios</h2>
+        
+        <div class="space-y-6">
+            <div class="card">
+                <div class="h-32 bg-gray-200 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=600" class="w-full h-full object-cover" alt="Talleres">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-lg">Talleres y Visitas</h3>
+                    <p class="text-sm text-gray-600">"Conocer los cereales y ensuciarse las manos". Sesiones de 60-90 min para todas las edades.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-utensils text-[#a3b18a] text-xl"></i>
+                        <h3 class="font-bold text-lg">Catering Artesano</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">Pintxos especiales basados en pasta: caneloncitos, raviolis, saquitos de verduras...</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="p-4">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-users-viewfinder text-[#7d6b5d] text-xl"></i>
+                        <h3 class="font-bold text-lg">Comidas para Grupos</h3>
+                    </div>
+                    <p class="text-sm text-gray-600">Menús personalizados para amigos, familiares o colectivos en nuestro espacio.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SECCIÓN: CONTACTO -->
+    <main id="contacto" class="section">
+        <h2 class="text-2xl font-bold mb-6">¿Dónde estamos?</h2>
+        
+        <div class="card p-6 mb-6">
+            <div class="flex items-start gap-4 mb-4">
+                <i class="fas fa-location-dot text-[#7d6b5d] mt-1"></i>
+                <div>
+                    <h4 class="font-bold">Dirección</h4>
+                    <p class="text-sm text-gray-600">Erdiko Kalea, 10, 20100 Orereta – Errenteria, (Gipuzkoa)</p>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4 mb-4">
+                <i class="fas fa-clock text-[#7d6b5d] mt-1"></i>
+                <div>
+                    <h4 class="font-bold">Horario</h4>
+                    <p class="text-sm text-gray-600">Lunes – Jueves: 10:00 – 14:30 | 17:00 – 20:00</p>
+                    <p class="text-sm text-gray-600">Viernes – Sábado: 10:00 – 14:30</p>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4">
+                <i class="fas fa-phone text-[#7d6b5d] mt-1"></i>
+                <div>
+                    <h4 class="font-bold">Teléfono</h4>
+                    <p class="text-sm text-gray-600">943 53 59 71</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-4 justify-center mt-8">
+            <a href="https://instagram.com/zituene" class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#7d6b5d] text-xl">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://facebook.com/zituene" class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#7d6b5d] text-xl">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="mailto:info@zituene.eus" class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-[#7d6b5d] text-xl">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+        
+        <div class="mt-10 text-center">
+            <p class="text-xs text-gray-400 italic">Pasta Obradore Kooperatiboa</p>
+        </div>
+    </main>
+
+    <!-- Navegación Inferior -->
+    <nav class="tab-bar">
+        <div class="tab-item active" onclick="showSection('home', this)">
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span>Inicio</span>
+        </div>
+        <div class="tab-item" onclick="showSection('productos', this)">
+            <i class="fas fa-wheat-awn text-xl mb-1"></i>
+            <span>Productos</span>
+        </div>
+        <div class="tab-item" onclick="showSection('servicios', this)">
+            <i class="fas fa-concierge-bell text-xl mb-1"></i>
+            <span>Servicios</span>
+        </div>
+        <div class="tab-item" onclick="showSection('contacto', this)">
+            <i class="fas fa-map-marker-alt text-xl mb-1"></i>
+            <span>Contacto</span>
+        </div>
+    </nav>
+
+    <script>
+        function showSection(sectionId, element) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            
+            // Mostrar la seleccionada
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Actualizar estado del menú
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            // Scroll al inicio
+            window.scrollTo(0, 0);
+        }
+        
+        // Efecto de feedback táctil simple
+        document.querySelectorAll('.card, .tab-item').forEach(el => {
+            el.addEventListener('touchstart', function() {
+                this.style.opacity = '0.7';
+            });
+            el.addEventListener('touchend', function() {
+                this.style.opacity = '1';
+            });
+        });
+    </script>
+</body>
+</html>

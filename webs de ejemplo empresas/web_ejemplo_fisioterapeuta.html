@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisioterapia Bilbao Centro | Tu Salud en el Corazón de la Villa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
+
+        :root {
+            /* Paleta Azul Donosti */
+            --primary: #005691; /* Azul San Sebastián */
+            --secondary: #0077B6;
+            --accent: #CAF0F8;
+            --text-dark: #023E8A;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), 
+                        url('https://images.unsplash.com/photo-1519824145371-296894a0daa9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-shadow {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-shadow:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .bg-donosti {
+            background-color: var(--primary);
+        }
+
+        .text-donosti {
+            color: var(--primary);
+        }
+
+        .border-donosti {
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Navegación -->
+    <nav class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-donosti text-white p-2 rounded-lg">
+                        <i class="fas fa-hand-holding-medical text-2xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight text-blue-900 serif-title">FisioBilbao</span>
+                </div>
+                
+                <!-- Menú Escritorio -->
+                <div class="hidden md:flex space-x-8 font-medium">
+                    <a href="#inicio" class="nav-link text-blue-900">Inicio</a>
+                    <a href="#servicios" class="nav-link text-blue-900">Servicios</a>
+                    <a href="#sobre-mi" class="nav-link text-blue-900">Sobre Mí</a>
+                    <a href="#contacto" class="bg-donosti text-white px-6 py-2 rounded-full hover:bg-blue-800 transition">Contacto</a>
+                </div>
+
+                <!-- Botón Móvil -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-btn" class="text-blue-900 text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Menú Móvil Overlay -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 p-4 space-y-4">
+            <a href="#inicio" class="block text-blue-900 font-semibold px-4 py-2">Inicio</a>
+            <a href="#servicios" class="block text-blue-900 font-semibold px-4 py-2">Servicios</a>
+            <a href="#sobre-mi" class="block text-blue-900 font-semibold px-4 py-2">Sobre Mí</a>
+            <a href="#contacto" class="block bg-donosti text-white text-center rounded-lg px-4 py-3">Contacto</a>
+        </div>
+    </nav>
+
+    <!-- Sección Hero -->
+    <section id="inicio" class="hero-gradient min-h-screen flex items-center pt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-6">
+                <span class="inline-block px-4 py-1 bg-blue-100 text-donosti rounded-full text-sm font-bold uppercase tracking-widest">
+                    De Donosti al centro de Bilbao
+                </span>
+                <h1 class="text-5xl md:text-7xl serif-title text-blue-950 leading-tight">
+                    Recupera tu <span class="text-donosti underline decoration-blue-200">movilidad</span> con calma.
+                </h1>
+                <p class="text-xl text-slate-600 leading-relaxed">
+                    Fisioterapia avanzada con el rigor de la experiencia y la frescura del Cantábrico. Tu salud merece un enfoque profesional en el corazón de la Villa.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
+                    <a href="#contacto" class="bg-donosti text-white px-8 py-4 rounded-xl text-lg font-bold hover:shadow-lg transition flex items-center justify-center">
+                        Reservar Cita <i class="fas fa-calendar-check ml-2"></i>
+                    </a>
+                    <a href="#servicios" class="bg-white border-2 border-blue-100 text-blue-900 px-8 py-4 rounded-xl text-lg font-bold hover:bg-blue-50 transition flex items-center justify-center">
+                        Especialidades
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:block relative">
+                <div class="absolute -top-10 -left-10 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+                <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-cyan-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+                <img src="https://images.unsplash.com/photo-1530026405186-ed1f139313f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Fisioterapia Profesional" class="relative rounded-2xl shadow-2xl border-8 border-white">
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios -->
+    <section id="servicios" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-4xl serif-title text-blue-950 mb-4">¿Cómo puedo ayudarte?</h2>
+                <p class="text-lg text-slate-600">Tratamientos integrales utilizando técnicas de vanguardia y terapia manual.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Servicio 1 -->
+                <div class="bg-slate-50 p-8 rounded-3xl card-shadow border border-blue-50">
+                    <div class="w-14 h-14 bg-blue-100 text-donosti rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-swimmer text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4">Recuperación Deportiva</h3>
+                    <p class="text-slate-600 mb-6">Especialista en lesiones de deportistas, enfocados en una vuelta segura y rápida a la actividad física.</p>
+                    <ul class="space-y-2 text-sm font-medium text-blue-800">
+                        <li><i class="fas fa-circle-check mr-2"></i> Readaptación al esfuerzo</li>
+                        <li><i class="fas fa-circle-check mr-2"></i> Prevención de lesiones</li>
+                    </ul>
+                </div>
+
+                <!-- Servicio 2 -->
+                <div class="bg-slate-50 p-8 rounded-3xl card-shadow border border-blue-50">
+                    <div class="w-14 h-14 bg-blue-100 text-donosti rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-hands-bubbles text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4">Osteopatía Manual</h3>
+                    <p class="text-slate-600 mb-6">Tratamiento global del cuerpo para restaurar el equilibrio biomecánico y reducir el dolor crónico.</p>
+                    <ul class="space-y-2 text-sm font-medium text-blue-800">
+                        <li><i class="fas fa-circle-check mr-2"></i> Cadenas miofasciales</li>
+                        <li><i class="fas fa-circle-check mr-2"></i> Ajustes estructurales</li>
+                    </ul>
+                </div>
+
+                <!-- Servicio 3 -->
+                <div class="bg-slate-50 p-8 rounded-3xl card-shadow border border-blue-50">
+                    <div class="w-14 h-14 bg-blue-100 text-donosti rounded-2xl flex items-center justify-center mb-6">
+                        <i class="fas fa-stethoscope text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4">Dolor de Espalda</h3>
+                    <p class="text-slate-600 mb-6">Especialistas en cervicalgias y lumbalgias derivadas del estrés o malas posturas en el trabajo.</p>
+                    <ul class="space-y-2 text-sm font-medium text-blue-800">
+                        <li><i class="fas fa-circle-check mr-2"></i> Ergonomía postural</li>
+                        <li><i class="fas fa-circle-check mr-2"></i> Punción seca</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sobre Mí -->
+    <section id="sobre-mi" class="py-24 bg-blue-900 text-white overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center">
+            <div class="relative order-2 md:order-1">
+                <div class="aspect-video rounded-3xl overflow-hidden shadow-2xl border-4 border-blue-800">
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Consulta Fisioterapia" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute -top-6 -left-6 bg-white text-donosti p-6 rounded-2xl shadow-xl hidden lg:block">
+                    <p class="text-3xl font-bold">100%</p>
+                    <p class="text-xs uppercase font-bold">Personalizado</p>
+                </div>
+            </div>
+            <div class="space-y-8 order-1 md:order-2">
+                <h2 class="text-4xl serif-title leading-tight">De la calma de Donosti a la energía de Bilbao</h2>
+                <div class="space-y-4 text-blue-100 text-lg">
+                    <p>
+                        Soy [Tu Nombre], fisioterapeuta donostiarra que ha decidido traer la filosofía de cuidado y bienestar del Cantábrico al centro de Bilbao. 
+                    </p>
+                    <p>
+                        Mi formación académica en la UPV se une a una curiosidad constante por las nuevas técnicas de rehabilitación. Aunque todavía estoy terminando trámites administrativos, mi compromiso con la salud es total.
+                    </p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-blue-800/50 p-4 rounded-xl backdrop-blur-sm">
+                        <h4 class="font-bold text-white mb-2 italic">Donosti Spirit</h4>
+                        <p class="text-sm text-blue-200">Enfoque calmado y detallista en cada diagnóstico.</p>
+                    </div>
+                    <div class="bg-blue-800/50 p-4 rounded-xl backdrop-blur-sm">
+                        <h4 class="font-bold text-white mb-2 italic">Bilbao Force</h4>
+                        <p class="text-sm text-blue-200">Ubicación estratégica y trato directo sin rodeos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contacto" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-slate-50 rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row border border-slate-100">
+                <!-- Info de Contacto -->
+                <div class="lg:w-1/3 bg-donosti p-12 text-white">
+                    <h2 class="text-3xl serif-title mb-8 text-blue-50">Contacto</h2>
+                    <p class="text-blue-100 mb-12">Pide tu cita previa o consúltame cualquier duda por WhatsApp o email.</p>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-800 p-3 rounded-lg"><i class="fas fa-map-marker-alt"></i></div>
+                            <div>
+                                <h4 class="font-bold">Dónde estamos</h4>
+                                <p class="text-blue-100">Calle Ledesma, 48001 Bilbao<br>(Muy cerca de Gran Vía)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-800 p-3 rounded-lg"><i class="fas fa-mobile-alt"></i></div>
+                            <div>
+                                <h4 class="font-bold">WhatsApp</h4>
+                                <p class="text-blue-100">+34 611 222 333</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="bg-blue-800 p-3 rounded-lg"><i class="fas fa-clock"></i></div>
+                            <div>
+                                <h4 class="font-bold">Horario</h4>
+                                <p class="text-blue-100">Lunes a Viernes<br>09:00 - 20:00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-16 flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Formulario -->
+                <div class="lg:w-2/3 p-12 bg-white">
+                    <form id="contactForm" class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-xs font-black text-blue-900 uppercase tracking-widest">Nombre completo</label>
+                            <input type="text" class="w-full px-4 py-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Ej: Aitor Eguren">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-black text-blue-900 uppercase tracking-widest">Teléfono</label>
+                            <input type="tel" class="w-full px-4 py-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Tu número de móvil">
+                        </div>
+                        <div class="space-y-2 md:col-span-2">
+                            <label class="text-xs font-black text-blue-900 uppercase tracking-widest">¿Qué te ocurre?</label>
+                            <textarea rows="4" class="w-full px-4 py-4 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Describe brevemente tu molestia..."></textarea>
+                        </div>
+                        <div class="md:col-span-2 pt-4">
+                            <button type="button" onclick="sendMessage()" class="w-full bg-donosti text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-800 transition shadow-lg flex items-center justify-center">
+                                Enviar Solicitud <i class="fas fa-paper-plane ml-2"></i>
+                            </button>
+                            <div id="success-msg" class="hidden mt-4 p-4 bg-blue-50 text-donosti rounded-xl text-center font-bold border border-blue-100">
+                                <i class="fas fa-check-circle mr-2"></i> ¡Solicitud recibida! Agur y gracias.
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-blue-200 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center space-x-2 text-white mb-8">
+                <i class="fas fa-hand-holding-medical text-3xl"></i>
+                <span class="text-2xl font-bold serif-title">FisioBilbao Centro</span>
+            </div>
+            <p class="mb-10 max-w-lg mx-auto text-blue-300">Uniendo la tradición del cuidado donostiarra con la modernidad del centro de Bilbao.</p>
+            <div class="border-t border-blue-900 pt-10 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-xs tracking-widest uppercase font-bold">
+                <p>&copy; 2024 FisioBilbao Centro. Made with ❤️ for Euskadi.</p>
+                <div class="flex space-x-8">
+                    <a href="#" class="hover:text-white transition">Legales</a>
+                    <a href="#" class="hover:text-white transition">Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Lógica del menú móvil
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Simulación de envío
+        function sendMessage() {
+            const success = document.getElementById('success-msg');
+            success.classList.remove('hidden');
+            document.getElementById('contactForm').reset();
+            setTimeout(() => {
+                success.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Scroll suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                menu.classList.add('hidden');
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
